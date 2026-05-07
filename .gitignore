@@ -1,0 +1,24 @@
+# Zola Output (Never commit the built site)
+public/
+
+# macOS / Linux Desktop artifacts
+.DS_Store
+*~
+.directory
+
+# Editor directories and swap files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Node / JS (Just in case you ever use npm to manage Tailwind)
+node_modules/
+package-lock.json
+
+# Tailwind Cache (if using v4 CLI caching)
+.parcel-cache/
+
+# Standalone Tailwind CLI
+tailwindcss

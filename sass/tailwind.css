@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Tell Tailwind where to scan for utility classes.
+   Paths are relative to this CSS file. */
+@source "../templates/**/*.html";
+@source "../content/**/*.md";

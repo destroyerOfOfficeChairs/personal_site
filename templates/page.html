@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <article class="max-w-3xl mx-auto">
+        <!-- Article Header -->
+        <header class="mb-8 border-b border-slate-800 pb-8">
+            <h1 class="text-4xl font-extrabold text-teal-400 mb-4">
+                {{ page.title }}
+            </h1>
+            
+            {% if page.date %}
+                <p class="text-slate-500 text-sm mb-6">{{ page.date | date(format="%B %d, %Y") }}</p>
+            {% endif %}
+
+            {% if page.extra.thumbnail %}
+                <img src="{{ page.extra.thumbnail }}" alt="{{ page.title }}" class="w-full h-64 object-cover rounded-lg shadow-lg">
+            {% endif %}
+        </header>
+        
+        <!-- Article Content -->
+        <div class="prose prose-invert lg:prose-xl text-slate-300">
+            {{ page.content | safe }}
+        </div>
+    </article>
+{% endblock content %}
