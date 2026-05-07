@@ -9,5 +9,6 @@
 
     <!-- Second Half: Latest 3 Articles -->
     <h2 class="text-2xl font-bold text-teal-400 mb-6">Recent Posts</h2>
-    {{ macros::blogfeed(limit=3) }}
+    {% set blog = get_section(path="blog/_index.md") %}
+    {{ macros::blogfeed(posts=blog.pages, limit=3) }}
 {% endblock content %}

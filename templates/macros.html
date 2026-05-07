@@ -22,20 +22,16 @@
     </a>
 {% endmacro %}
 
-{% macro blogfeed(limit=0) %}
-    {# Access the blog section directly #}
-    {% set blog = get_section(path="blog/_index.md") %}
-    
-    {# Determine which list of pages to use #}
+{% macro blogfeed(posts, limit=0) %}
+    {# We now slice the 'posts' argument passed into the macro #}
     {% if limit > 0 %}
-        {% set posts = blog.pages | slice(end=limit) %}
+        {% set feed_posts = posts | slice(end=limit) %}
     {% else %}
-        {% set posts = blog.pages %}
+        {% set feed_posts = posts %}
     {% endif %}
 
     <div class="flex flex-col gap-6">
-        {% for post in posts %}
-            {# Call 'card' directly, NOT macros::card #}
+        {% for post in feed_posts %}
             {{ self::card(page=post) }}
         {% endfor %}
     </div>
