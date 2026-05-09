@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ config.title | default(value="WJ Creations Sandbox") }}{% endblock title %}</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ config.title | default(value="WJ Creations Sandbox") }}{% endblock title %}</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
-    
-    <!-- Global Navigation -->
-    <nav class="p-4 border-b border-slate-800">
-        <div class="max-w-4xl mx-auto flex gap-4 font-bold text-teal-400">
-            {% set home = get_section(path="_index.md") %}
-            {% set blog = get_section(path="blog/_index.md") %}
-        
-            <a href="{{ home.permalink }}" class="hover:text-teal-300 transition-colors">{{ home.title }}</a>
-            <a href="{{ blog.permalink }}" class="hover:text-teal-300 transition-colors">{{ blog.title }}</a>
-        </div>
-    </nav>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow max-w-4xl mx-auto p-8 w-full">
-        {% block content %}
-        <!-- Child templates will dump their HTML here -->
-        {% endblock content %}
-    </main>
+  <!-- Global Navigation -->
+  <nav class="p-4 border-b border-slate-800">
+    <div class="max-w-4xl mx-auto flex gap-4 font-bold text-teal-400">
+      {% set home = get_section(path="_index.md") %}
+      {% set blog = get_section(path="blog/_index.md") %}
 
-    <!-- Global Footer -->
-    <footer class="p-6 border-t border-slate-800 text-center text-slate-500 text-sm mt-auto">
-        &copy; {{ now() | date(format="%Y") }} William Joel Bryan
-        <br>
-        <span class="text-xs">lolwut</span>
-    </footer>
+      <a href="{{ home.permalink }}" class="hover:text-teal-300 transition-colors">{{ home.title }}</a>
+      <a href="{{ blog.permalink }}" class="hover:text-teal-300 transition-colors">{{ blog.title }}</a>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow max-w-4xl mx-auto p-8 w-full">
+    {% block content %}
+    <!-- Child templates will dump their HTML here -->
+    {% endblock content %}
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="p-6 border-t border-slate-800 text-center text-slate-500 text-sm mt-auto">
+    &copy; {{ now() | date(format="%Y") }} William Joel Bryan
+    <br>
+    <span class="text-xs">lolwut</span>
+  </footer>
 
 </body>
+
 </html>

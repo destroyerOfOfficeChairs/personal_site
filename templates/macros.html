@@ -1,38 +1,39 @@
 {% macro card(page) %}
-    <a href="{{ page.permalink }}" class="flex flex-row items-center gap-6 p-4 rounded-lg border border-slate-800 hover:bg-slate-800 transition-colors group">
-        {% if page.extra.thumbnail %}
-            <img src="{{ page.extra.thumbnail }}" alt="{{ page.title }}" class="w-24 h-24 object-cover rounded shadow-md">
-        {% endif %}
+<a href="{{ page.permalink }}"
+  class="flex flex-row items-center gap-6 p-4 rounded-lg border border-slate-800 hover:bg-slate-800 transition-colors group">
+  {% if page.extra.thumbnail %}
+  <img src="{{ page.extra.thumbnail }}" alt="{{ page.title }}" class="w-48 h-48 object-cover rounded shadow-md">
+  {% endif %}
 
-        <div class="flex flex-col">
-            <h3 class="text-xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors">
-                {{ page.title }}
-            </h3>
-            
-            <p class="text-slate-400 text-sm mt-1">
-                {{ page.description | default(value=page.summary | safe) }}
-            </p>
+  <div class="flex flex-col">
+    <h3 class="text-xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors">
+      {{ page.title }}
+    </h3>
 
-            {% if page.date %}
-                <span class="text-slate-500 text-xs mt-2 italic">
-                    {{ page.date | date(format="%B %d, %Y") }}
-                </span>
-            {% endif %}
-        </div>
-    </a>
+    <p class="text-slate-400 text-sm mt-1">
+      {{ page.description | default(value=page.summary | safe) }}
+    </p>
+
+    {% if page.date %}
+    <span class="text-slate-500 text-xs mt-2 italic">
+      {{ page.date | date(format="%B %d, %Y") }}
+    </span>
+    {% endif %}
+  </div>
+</a>
 {% endmacro %}
 
 {% macro blogfeed(posts, limit=0) %}
-    {# We now slice the 'posts' argument passed into the macro #}
-    {% if limit > 0 %}
-        {% set feed_posts = posts | slice(end=limit) %}
-    {% else %}
-        {% set feed_posts = posts %}
-    {% endif %}
+{# We now slice the 'posts' argument passed into the macro #}
+{% if limit > 0 %}
+{% set feed_posts = posts | slice(end=limit) %}
+{% else %}
+{% set feed_posts = posts %}
+{% endif %}
 
-    <div class="flex flex-col gap-6">
-        {% for post in feed_posts %}
-            {{ self::card(page=post) }}
-        {% endfor %}
-    </div>
+<div class="flex flex-col gap-6">
+  {% for post in feed_posts %}
+  {{ self::card(page=post) }}
+  {% endfor %}
+</div>
 {% endmacro %}

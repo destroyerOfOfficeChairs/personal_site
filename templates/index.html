@@ -2,13 +2,13 @@
 {% import "macros.html" as macros %}
 
 {% block content %}
-    <!-- First Half: About Me -->
-    <div class="prose prose-invert lg:prose-xl text-slate-300 mb-12">
-        {{ section.content | safe }}
-    </div>
+<!-- First Half: About Me -->
+<div class="prose prose-invert lg:prose-xl text-slate-300 mb-12">
+  {{ section.content | safe }}
+</div>
 
-    <!-- Second Half: Latest 3 Articles -->
-    <h2 class="text-2xl font-bold text-teal-400 mb-6">Recent Posts</h2>
-    {% set blog = get_section(path="blog/_index.md") %}
-    {{ macros::blogfeed(posts=blog.pages, limit=3) }}
+<!-- Second Half: Latest 3 Articles -->
+<h2 class="text-2xl font-bold text-teal-400 mb-6">Recent Posts</h2>
+{% set blog = get_section(path="blog/_index.md") %}
+{{ macros::blogfeed(posts=blog.pages, limit=3) }}
 {% endblock content %}

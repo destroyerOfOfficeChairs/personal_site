@@ -2,35 +2,36 @@
 {% import "macros.html" as macros %}
 
 {% block content %}
-    <h1 class="text-4xl font-extrabold text-teal-400 mb-6">
-        {{ section.title }}
-    </h1>
-    
-    <!-- Render the "This is the blog page." text -->
-    <div class="prose prose-invert lg:prose-xl text-slate-300 mb-12">
-        {{ section.content | safe }}
-    </div>
+<h1 class="text-4xl font-extrabold text-teal-400 mb-6">
+  {{ section.title }}
+</h1>
 
-    <!-- Render all the articles in this section -->
-    {{ macros::blogfeed(posts=paginator.pages) }}
+<!-- Render the "This is the blog page." text -->
+<div class="prose prose-invert lg:prose-xl text-slate-300 mb-12">
+  {{ section.content | safe }}
+</div>
 
-    {% if paginator.previous or paginator.next %}
-        <nav class="flex justify-between items-center mt-12 pt-6 border-t border-slate-800">
-            
-            {% if paginator.previous %}
-                <a href="{{ paginator.previous }}" class="text-teal-400 hover:text-teal-300 font-bold transition-colors">&larr; Newer</a>
-            {% else %}
-                <span class="text-slate-700 font-bold cursor-not-allowed">&larr; Newer</span>
-            {% endif %}
+<!-- Render all the articles in this section -->
+{{ macros::blogfeed(posts=paginator.pages) }}
 
-            <span class="text-slate-500 text-sm">Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</span>
+{% if paginator.previous or paginator.next %}
+<nav class="flex justify-between items-center mt-12 pt-6 border-t border-slate-800">
 
-            {% if paginator.next %}
-                <a href="{{ paginator.next }}" class="text-teal-400 hover:text-teal-300 font-bold transition-colors">Older &rarr;</a>
-            {% else %}
-                <span class="text-slate-700 font-bold cursor-not-allowed">Older &rarr;</span>
-            {% endif %}
+  {% if paginator.previous %}
+  <a href="{{ paginator.previous }}" class="text-teal-400 hover:text-teal-300 font-bold transition-colors">&larr;
+    Newer</a>
+  {% else %}
+  <span class="text-slate-700 font-bold cursor-not-allowed">&larr; Newer</span>
+  {% endif %}
 
-        </nav>
-    {% endif %}
+  <span class="text-slate-500 text-sm">Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</span>
+
+  {% if paginator.next %}
+  <a href="{{ paginator.next }}" class="text-teal-400 hover:text-teal-300 font-bold transition-colors">Older &rarr;</a>
+  {% else %}
+  <span class="text-slate-700 font-bold cursor-not-allowed">Older &rarr;</span>
+  {% endif %}
+
+</nav>
+{% endif %}
 {% endblock content %}
