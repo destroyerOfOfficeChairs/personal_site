@@ -5,4 +5,4 @@ Terminal 2:
 zola serve
 
 Terminal 3:
-./tailwindcss -i ./sass/tailwind.css -o ./static/css/style.css --watch
+./tailwind_cli -i ./sass/tailwind.css -o ./static/css/style.css --watch

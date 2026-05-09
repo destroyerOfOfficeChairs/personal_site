@@ -21,4 +21,9 @@ package-lock.json
 .parcel-cache/
 
 # Standalone Tailwind CLI
-tailwindcss
+tailwind_cli
+
+# Editor dependencies for Tailwind LSP
+node_modules/
+package.json
+package-lock.json
