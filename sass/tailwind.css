@@ -6,33 +6,34 @@
 @source "../content/**/*.md";
 
 @layer base {
-  h1 {
-    /* 
-      w-fit keeps the background tight to the text.
-      px-3 py-1 gives it some breathing room.
-      Dark mode classes ensure it looks good on both themes.
-    */
-    @apply text-4xl md:text-5xl font-extrabold mb-8 mt-10 w-fit px-3 py-1 rounded-md bg-yellow-300 text-gray-900 dark:bg-yellow-500/90 dark:text-gray-950 shadow-sm;
+
+  /* Only affects H1s inside your Markdown content */
+  .article-body h1 {
+    @apply text-3xl font-bold mb-8 mt-10 py-4 px-6 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-l-8 border-blue-600 dark:border-blue-400 rounded-r-md;
   }
 
-  h2 {
+  /* Make sure to scope your other Markdown elements too! */
+  .article-body h2 {
     @apply text-3xl font-semibold mb-4 mt-8;
   }
 
-  h3 {
+  .article-body h3 {
     @apply text-2xl font-medium mb-3 mt-6;
   }
 
-  /* Add other elements as needed, for example: */
-  p {
+  .article-body p {
     @apply mb-4 leading-relaxed;
   }
 
-  ul {
+  .article-body ul {
     @apply list-disc list-inside mb-4;
   }
 
-  code {
+  .article-body code {
     @apply bg-gray-800 text-gray-200 px-1 py-0.5 rounded text-sm;
+  }
+
+  .article-body a {
+    @apply font-medium text-blue-600 dark:text-blue-400 px-0.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors duration-100;
   }
 }
