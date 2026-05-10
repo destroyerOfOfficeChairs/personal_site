@@ -6,7 +6,7 @@
   <img src="{{ thumbnail.url}}" alt="Article thumbnail">
   {% endif %}
 
-  <div class="flex flex-col">
+  <div class="flex flex-col w-full">
     <h3 class="text-xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors">
       {{ page.title }}
     </h3>
@@ -21,16 +21,62 @@
     </span>
     {% endif %}
 
-    <!-- Categories go here -->
+    <!-- Taxonomies container -->
+    {% if page.taxonomies.categories or page.taxonomies.tags %}
+    <div class="flex flex-wrap gap-2 mt-4">
+      <!-- Categories -->
+      {% if page.taxonomies.categories %}
+      {% for cat in page.taxonomies.categories %}
+      <span class="px-2 py-1 bg-slate-700/50 text-teal-300 text-xs font-semibold rounded uppercase tracking-wider">
+        {{ cat }}
+      </span>
+      {% endfor %}
+      {% endif %}
 
-    <!-- Tags go here -->
+      <!-- Tags -->
+      {% if page.taxonomies.tags %}
+      {% for tag in page.taxonomies.tags %}
+      <span class="px-2 py-1 bg-slate-800 text-slate-400 border border-slate-700 text-xs rounded">
+        #{{ tag }}
+      </span>
+      {% endfor %}
+      {% endif %}
+    </div>
+    {% endif %}
 
   </div>
 </a>
 {% endmacro %}
 
-{% macro article_taxonomies() %}
-<!-- Implement this -->
+{% macro article_taxonomies(page) %}
+{% if page.taxonomies.categories or page.taxonomies.tags %}
+<div class="flex flex-wrap items-center gap-3 mt-4">
+
+  {% if page.taxonomies.categories %}
+  <div class="flex gap-2">
+    {% for cat in page.taxonomies.categories %}
+    <!-- Zola's get_taxonomy_url function dynamically builds the link to the taxonomy page -->
+    <a href="{{ get_taxonomy_url(kind='categories', name=cat) }}"
+      class="px-3 py-1 bg-teal-900/30 text-teal-300 text-sm font-semibold rounded hover:bg-teal-900/50 transition-colors">
+      {{ cat }}
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if page.taxonomies.tags %}
+  <div class="flex flex-wrap gap-2">
+    {% for tag in page.taxonomies.tags %}
+    <a href="{{ get_taxonomy_url(kind='tags', name=tag) }}"
+      class="text-slate-400 text-sm hover:text-teal-300 transition-colors">
+      #{{ tag }}
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
 {% endmacro %}
 
 {% macro blogfeed(posts, limit=0) %}

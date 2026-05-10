@@ -4,3 +4,35 @@
    Paths are relative to this CSS file. */
 @source "../templates/**/*.html";
 @source "../content/**/*.md";
+
+@layer base {
+  h1 {
+    /* 
+      w-fit keeps the background tight to the text.
+      px-3 py-1 gives it some breathing room.
+      Dark mode classes ensure it looks good on both themes.
+    */
+    @apply text-4xl md:text-5xl font-extrabold mb-8 mt-10 w-fit px-3 py-1 rounded-md bg-yellow-300 text-gray-900 dark:bg-yellow-500/90 dark:text-gray-950 shadow-sm;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold mb-4 mt-8;
+  }
+
+  h3 {
+    @apply text-2xl font-medium mb-3 mt-6;
+  }
+
+  /* Add other elements as needed, for example: */
+  p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  ul {
+    @apply list-disc list-inside mb-4;
+  }
+
+  code {
+    @apply bg-gray-800 text-gray-200 px-1 py-0.5 rounded text-sm;
+  }
+}

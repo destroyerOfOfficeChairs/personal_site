@@ -1,2 +1,4 @@
+AstroNvim
+linux
 pixelart
 png
