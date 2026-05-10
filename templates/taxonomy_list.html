@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mb-12">
+  <!-- The capitalize filter makes 'tags' -> 'Tags' -->
+  <h1 class="text-4xl font-extrabold text-teal-400 mb-8 capitalize">{{ taxonomy.name }}</h1>
+  
+  <div class="flex flex-wrap gap-4">
+    {% for term in terms %}
+    <a href="{{ term.permalink }}" 
+       class="px-4 py-2 bg-slate-800 text-slate-300 rounded-full hover:bg-teal-900 hover:text-teal-300 transition-colors border border-slate-700 font-medium">
+      {{ term.name }} 
+      <span class="text-xs text-slate-500 ml-1">({{ term.pages | length }})</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

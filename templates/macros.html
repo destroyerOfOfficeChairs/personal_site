@@ -1,8 +1,9 @@
 {% macro card(page) %}
 <a href="{{ page.permalink }}"
   class="flex flex-row items-center gap-6 p-4 rounded-lg border border-slate-800 hover:bg-slate-800 transition-colors group">
-  {% if page.extra.thumbnail %}
-  <img src="{{ page.extra.thumbnail }}" alt="{{ page.title }}" class="w-48 h-48 object-cover rounded shadow-md">
+  {% if page.extra.hero %}
+  {% set thumbnail = resize_image(path=page.extra.hero, width=200, height=200, op="fit_height") %}
+  <img src="{{ thumbnail.url}}" alt="Article thumbnail">
   {% endif %}
 
   <div class="flex flex-col">
@@ -11,7 +12,7 @@
     </h3>
 
     <p class="text-slate-400 text-sm mt-1">
-      {{ page.description | default(value=page.summary | safe) }}
+      {{ page.extra.subtitle | default(value=page.summary | safe) }}
     </p>
 
     {% if page.date %}
@@ -19,8 +20,17 @@
       {{ page.date | date(format="%B %d, %Y") }}
     </span>
     {% endif %}
+
+    <!-- Categories go here -->
+
+    <!-- Tags go here -->
+
   </div>
 </a>
+{% endmacro %}
+
+{% macro article_taxonomies() %}
+<!-- Implement this -->
 {% endmacro %}
 
 {% macro blogfeed(posts, limit=0) %}
