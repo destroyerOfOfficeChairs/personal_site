@@ -2,3 +2,4 @@ AstroNvim
 linux
 pixelart
 png
+typst

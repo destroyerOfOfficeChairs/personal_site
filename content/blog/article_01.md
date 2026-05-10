@@ -1,9 +1,9 @@
 +++
 title = "Helix Is Better Than Neovim"
-date = 2026-05-02
+date = 2026-05-09
 [taxonomies]
 categories = ["computers"]
-tags = ["helix", "linux", "coding", "writing"]
+tags = ["helix", "rust", "linux", "coding", "writing"]
 [extra]
 hero = "/images/helix_editor_pixelart_upscaled.png"
 subtitle = "I said what I said."
@@ -39,9 +39,17 @@ It's made with Rust!
 
 That's more than just a vibe check. You get:
 
-- **Native Speed:** Because it is a compiled Rust binary, Helix doesn't suffer from garbage collection stutters or the interpreted script lag that can plague other editors once they are weighed down by plugins.
-- **The Best LSP Integration:** Since the community is heavily overlapping with the Rust-Analyzer contributors, the Rust support in Helix is arguably the best in the business.
-- **Modern Systems Thinking:** Just like Rust, Helix was built with modern defaults. It doesn't assume you live in 1976. It assumes you want multi-cursors, it assumes you want Tree-sitter, and it assumes you want a fast, reliable terminal experience.
+## Native Speed
+
+Because it is a compiled Rust binary, Helix doesn't suffer from garbage collection stutters or the interpreted script lag that can plague other editors once they are weighed down by plugins.
+
+## The Best LSP Integration
+
+Since the community is heavily overlapping with the Rust-Analyzer contributors, the Rust support in Helix is arguably the best in the business.
+
+## Modern Systems Thinking
+
+Just like Rust, Helix was built with modern defaults. It doesn't assume you live in 1976. It assumes you want multi-cursors, it assumes you want Tree-sitter, and it assumes you want a fast, reliable terminal experience.
 
 # The Verdict
 

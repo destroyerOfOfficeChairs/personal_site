@@ -13,6 +13,7 @@ taxonomies = [
 ]
 
 [markdown]
+smart_punctuation = true
 
 [markdown.highlighting]
 theme = "catppuccin-mocha"
