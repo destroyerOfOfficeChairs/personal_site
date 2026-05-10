@@ -21,36 +21,15 @@
     </span>
     {% endif %}
 
-    <!-- Taxonomies container -->
-    {% if page.taxonomies.categories or page.taxonomies.tags %}
-    <div class="flex flex-wrap gap-2 mt-4">
-      <!-- Categories -->
-      {% if page.taxonomies.categories %}
-      {% for cat in page.taxonomies.categories %}
-      <span class="px-2 py-1 bg-slate-700/50 text-teal-300 text-xs font-semibold rounded uppercase tracking-wider">
-        {{ cat }}
-      </span>
-      {% endfor %}
-      {% endif %}
-
-      <!-- Tags -->
-      {% if page.taxonomies.tags %}
-      {% for tag in page.taxonomies.tags %}
-      <span class="px-2 py-1 bg-slate-800 text-slate-400 border border-slate-700 text-xs rounded">
-        #{{ tag }}
-      </span>
-      {% endfor %}
-      {% endif %}
-    </div>
-    {% endif %}
-
   </div>
 </a>
+
+{{ self:: article_taxonomies(page=page) }}
 {% endmacro %}
 
 {% macro article_taxonomies(page) %}
 {% if page.taxonomies.categories or page.taxonomies.tags %}
-<div class="flex flex-wrap items-center gap-3 mt-4">
+<div class="flex flex-wrap items-center gap-3 mb-6">
 
   {% if page.taxonomies.categories %}
   <div class="flex gap-2">
@@ -87,7 +66,7 @@
 {% set feed_posts = posts %}
 {% endif %}
 
-<div class="flex flex-col gap-6">
+<div class="flex flex-col">
   {% for post in feed_posts %}
   {{ self::card(page=post) }}
   {% endfor %}
