@@ -1,0 +1,39 @@
+{% macro meta_macro() %}
+{% set seo_title = config.title | default(value="WJ Creations") %}
+{% set seo_description = config.description | default(value="Digital workspace, project showcase, and blog covering
+software engineering, Rust, and leathercraft.") %}
+{% set seo_image = get_url(path="/images/wjcreations_default_share_card.png") %}
+
+{% if page %}
+{% set seo_title = page.title %}
+{% if page.description %}
+{% set seo_description = page.description %}
+{% elif page.summary %}
+{% set seo_description = page.summary | striptags | truncate(length=150) %}
+{% endif %}
+{% if page.extra.hero %}
+{% set seo_image = get_url(path=page.extra.hero) %}
+{% endif %}
+{% elif section %}
+{% if section.title %}
+{% set seo_title = section.title ~ " | " ~ config.title %}
+{% endif %}
+{% if section.description %}
+{% set seo_description = section.description %}
+{% endif %}
+{% endif %}
+
+<meta name="description" content="{{ seo_description }}">
+
+<meta property="og:type" content="{% if page %}article{% else %}website{% endif %}">
+<meta property="og:url" content="{{ current_url | default(value=config.base_url) | safe }}">
+<meta property="og:title" content="{{ seo_title }}">
+<meta property="og:description" content="{{ seo_description }}">
+<meta property="og:image" content="{{ seo_image }}">
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="{{ current_url | default(value=config.base_url) | safe }}">
+<meta property="twitter:title" content="{{ seo_title }}">
+<meta property="twitter:description" content="{{ seo_description }}">
+<meta property="twitter:image" content="{{ seo_image }}">
+{% endmacro %}
