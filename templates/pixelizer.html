@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-4xl font-extrabold text-teal-400 mb-4">
+  {{ page.title }}
+</h1>
+<div class="article-body">
+  {{ page.content | safe }}
+</div>
+<p>WASM canvas coming soon. For now, here is a static image:</p>
+<img src="{{ get_url(path="pixelizer/sublime_flame.png" ) }}" alt="A cute picture of a little zen flame dude.">
+{% endblock content %}
