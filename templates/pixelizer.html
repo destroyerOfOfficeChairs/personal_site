@@ -1,12 +1,575 @@
-{% extends "base.html" %}
+{% import "meta_macro.html" as meta_macro %}
+{% import "nav.html" as chrome %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-<h1 class="text-4xl font-extrabold text-teal-400 mb-4">
-  {{ page.title }}
-</h1>
-<div class="article-body">
-  {{ page.content | safe }}
-</div>
-<p>WASM canvas coming soon. For now, here is a static image:</p>
-<img src="{{ get_url(path="pixelizer/sublime_flame.png" ) }}" alt="A cute picture of a little zen flame dude.">
-{% endblock content %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }}{% if config.title %} | {{ config.title }}{% endif %}</title>
+  {{ meta_macro::meta_macro() }}
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<!--
+  ============================================================
+  Standalone pixelizer page.
+
+  Deliberately does NOT extend base.html: base.html caps <main>
+  at max-w-4xl, which is too narrow for a side-by-side controls
+  + image layout. Instead this template reuses the shared
+  meta_macro + nav.html chrome so SEO and nav/footer stay
+  identical to the rest of the site, but owns its own <main>
+  width.
+
+  Header/intro prose sit at max-w-4xl to line up with the nav
+  and footer; only the tool work area widens to max-w-7xl.
+
+  The control set maps 1:1 onto pixelizer_core::Operation.
+  The canvas backing store is always true output resolution;
+  CSS width scales it visually, so the exported PNG is never
+  degraded by zoom.
+  ============================================================
+-->
+
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+  {{ chrome::nav() }}
+
+  <main class="flex-grow w-full p-8">
+
+    <!-- Header + intro: aligned to nav/footer width -->
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-extrabold text-teal-400 mb-4">
+        {{ page.title }}
+      </h1>
+      <div class="article-body">
+        {{ page.content | safe }}
+      </div>
+    </div>
+
+    <!-- Tool work area: wider -->
+    <div class="max-w-7xl mx-auto mt-8 grid grid-cols-1 lg:grid-cols-[20rem_1fr] gap-8 items-start">
+
+      <!-- ---------------- Control panel ---------------- -->
+      <aside class="flex flex-col gap-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-2">
+
+        <!-- Image input -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <h2 class="text-lg font-bold text-teal-300 mb-3">Source image</h2>
+          <label class="block">
+            <span class="sr-only">Choose an image</span>
+            <input id="file-input" type="file" accept="image/png,image/jpeg"
+              class="block w-full text-sm text-slate-400
+                     file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                     file:text-sm file:font-semibold file:bg-teal-900/40 file:text-teal-300
+                     hover:file:bg-teal-900/60 file:cursor-pointer cursor-pointer">
+          </label>
+          <p class="text-xs text-slate-500 mt-2">PNG or JPEG. Processed entirely in your browser.</p>
+        </section>
+
+        <!-- pixel_size -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-pixel_size" checked class="accent-teal-500">
+            <span class="font-bold text-teal-300">Pixel size</span>
+          </label>
+          <div data-params-for="pixel_size">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Block size for downsampling &amp; trimming. Applied first.</p>
+            <div class="flex items-center gap-3">
+              <input type="range" id="pixel_size-size" min="1" max="64" value="16"
+                class="flex-grow accent-teal-500">
+              <output id="pixel_size-size-out" class="text-sm text-slate-300 w-8 text-right">16</output>
+            </div>
+          </div>
+        </section>
+
+        <!-- trim_height -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-trim_height" checked class="accent-teal-500">
+            <span class="font-bold text-teal-300">Trim height</span>
+          </label>
+          <div data-params-for="trim_height">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Crop height so it divides evenly by pixel size.</p>
+            <select id="trim_height-mode"
+              class="w-full bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-2">
+              <option value="top">top</option>
+              <option value="bottom">bottom</option>
+              <option value="both" selected>both</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- trim_width -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-trim_width" checked class="accent-teal-500">
+            <span class="font-bold text-teal-300">Trim width</span>
+          </label>
+          <div data-params-for="trim_width">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Crop width so it divides evenly by pixel size.</p>
+            <select id="trim_width-mode"
+              class="w-full bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-2">
+              <option value="left">left</option>
+              <option value="right">right</option>
+              <option value="both" selected>both</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- normalize -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-normalize" class="accent-teal-500">
+            <span class="font-bold text-teal-300">Normalize</span>
+          </label>
+          <div data-params-for="normalize">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Stretch channel brightness across a percentile range.</p>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="text-xs text-slate-400">low
+                <input type="number" id="normalize-low" min="0" max="1" step="0.01" value="0.01"
+                  class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-1.5">
+              </label>
+              <label class="text-xs text-slate-400">high
+                <input type="number" id="normalize-high" min="0" max="1" step="0.01" value="0.99"
+                  class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-1.5">
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- blur -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-blur" class="accent-teal-500">
+            <span class="font-bold text-teal-300">Blur</span>
+          </label>
+          <div data-params-for="blur">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Gaussian smoothing before quantization.</p>
+            <div class="flex items-center gap-3">
+              <input type="range" id="blur-sigma" min="0" max="10" step="0.1" value="4.0"
+                class="flex-grow accent-teal-500">
+              <output id="blur-sigma-out" class="text-sm text-slate-300 w-10 text-right">4.0</output>
+            </div>
+          </div>
+        </section>
+
+        <!-- downsample (no params) -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-downsample" checked class="accent-teal-500">
+            <span class="font-bold text-teal-300">Downsample</span>
+          </label>
+          <div data-params-for="downsample">
+            <p class="text-xs text-slate-500 mt-2">Nearest-neighbor downscale by pixel size.</p>
+          </div>
+        </section>
+
+        <!-- posterize -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-posterize" class="accent-teal-500">
+            <span class="font-bold text-teal-300">Posterize</span>
+          </label>
+          <div data-params-for="posterize">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Reduce each channel to N levels.</p>
+            <div class="flex items-center gap-3">
+              <input type="range" id="posterize-levels" min="2" max="16" value="5"
+                class="flex-grow accent-teal-500">
+              <output id="posterize-levels-out" class="text-sm text-slate-300 w-8 text-right">5</output>
+            </div>
+          </div>
+        </section>
+
+        <!-- palette_map -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-palette_map" checked class="accent-teal-500">
+            <span class="font-bold text-teal-300">Palette map</span>
+          </label>
+          <div data-params-for="palette_map">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Map each pixel to its nearest palette color (OkLab).</p>
+
+            <div id="palette-list" class="flex flex-wrap gap-2 mb-3">
+              <!-- color swatches injected by JS -->
+            </div>
+            <div class="flex gap-2 mb-4">
+              <input type="color" id="palette-new" value="#a08658"
+                class="h-9 w-12 bg-slate-900 border border-slate-700 rounded cursor-pointer">
+              <button type="button" id="palette-add"
+                class="px-3 py-1.5 text-sm font-semibold bg-teal-900/40 text-teal-300 rounded hover:bg-teal-900/60 transition-colors">
+                Add color
+              </button>
+            </div>
+
+            <!-- dither -->
+            <label class="flex items-center gap-2 mb-3">
+              <input type="checkbox" id="op-dither" checked class="accent-teal-500">
+              <span class="text-sm font-semibold text-slate-300">Dither</span>
+            </label>
+            <div data-params-for="dither">
+              <select id="dither-algorithm"
+                class="w-full mb-3 bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-2">
+                <option value="floyd_steinberg">floyd_steinberg</option>
+                <option value="atkinson" selected>atkinson</option>
+                <option value="jjn">jjn</option>
+                <option value="bayer4">bayer4</option>
+                <option value="bayer8">bayer8</option>
+              </select>
+
+              <!-- error-diffusion params (fs / atkinson / jjn) -->
+              <div id="dither-diffuse-params" class="grid grid-cols-2 gap-3 items-end">
+                <label class="text-xs text-slate-400">bleed
+                  <input type="number" id="dither-bleed" min="0" max="1" step="0.05" value="0.2"
+                    class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-1.5">
+                </label>
+                <label class="flex items-center gap-2 text-xs text-slate-400 pb-1.5">
+                  <input type="checkbox" id="dither-clamp" class="accent-teal-500">
+                  clamp
+                </label>
+              </div>
+
+              <!-- ordered params (bayer4 / bayer8) -->
+              <div id="dither-ordered-params" class="hidden">
+                <label class="text-xs text-slate-400">strength
+                  <input type="number" id="dither-strength" min="0" max="128" step="1" value="32"
+                    class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-1.5">
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- upscale -->
+        <section class="p-4 rounded-lg border border-slate-800 bg-slate-800/30">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="op-upscale" checked class="accent-teal-500">
+            <span class="font-bold text-teal-300">Upscale</span>
+          </label>
+          <div data-params-for="upscale">
+            <p class="text-xs text-slate-500 mt-3 mb-3">Integer nearest-neighbor upscale so the art is viewable.</p>
+            <div class="flex items-center gap-3">
+              <input type="range" id="upscale-factor" min="1" max="32" value="16"
+                class="flex-grow accent-teal-500">
+              <output id="upscale-factor-out" class="text-sm text-slate-300 w-8 text-right">16</output>
+            </div>
+          </div>
+        </section>
+
+        <button type="button" id="run-btn" disabled
+          class="w-full py-3 font-bold rounded-lg bg-teal-500 text-slate-900
+                 hover:bg-teal-400 transition-colors disabled:bg-slate-700 disabled:text-slate-500
+                 disabled:cursor-not-allowed">
+          Pixelize
+        </button>
+      </aside>
+
+      <!-- ---------------- Output ---------------- -->
+      <div class="flex flex-col gap-4 min-w-0">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <h2 class="text-lg font-bold text-teal-300">Result</h2>
+
+          <!-- Zoom toolbar -->
+          <div id="zoom-toolbar" class="flex items-center gap-3 hidden">
+            <span class="text-xs text-slate-500 uppercase tracking-wide">Zoom</span>
+            <input type="range" id="zoom-slider" min="10" max="100" step="1" value="100"
+              class="w-32 accent-teal-500">
+            <div class="flex items-center gap-1">
+              <input type="number" id="zoom-input" min="10" max="100" step="1" value="100"
+                class="w-16 bg-slate-900 border border-slate-700 rounded-md text-sm text-slate-200 p-1 text-right">
+              <span class="text-sm text-slate-400">%</span>
+            </div>
+            <button type="button" id="zoom-fit"
+              class="px-3 py-1 text-xs font-semibold bg-slate-800 text-slate-300 rounded hover:bg-slate-700 transition-colors">
+              Fit
+            </button>
+            <a id="download-btn"
+              class="px-4 py-1.5 text-sm font-semibold bg-slate-800 text-slate-300 rounded
+                     hover:bg-slate-700 transition-colors hidden">
+              Download PNG
+            </a>
+          </div>
+        </div>
+
+        <!-- viewport: fixed-height scrollable frame the image is fitted into -->
+        <div id="viewport"
+          class="relative border border-slate-800 rounded-lg bg-slate-950/50 overflow-auto grid place-items-center p-4"
+          style="height: min(75vh, 48rem);">
+          <!-- image-rendering:pixelated keeps the upscaled art crisp when zoomed -->
+          <canvas id="output-canvas"
+            class="block"
+            style="image-rendering: pixelated;"></canvas>
+
+          <div id="placeholder"
+            class="absolute inset-0 flex items-center justify-center text-slate-600 text-sm pointer-events-none">
+            Choose an image and press Pixelize.
+          </div>
+
+          <div id="status"
+            class="absolute inset-0 flex items-center justify-center bg-slate-950/80 text-teal-300 text-sm hidden">
+            Processing&hellip;
+          </div>
+        </div>
+
+        <p id="dims" class="text-xs text-slate-500 hidden"></p>
+        <p id="error-msg" class="text-sm text-red-400 hidden"></p>
+      </div>
+    </div>
+  </main>
+
+  {{ chrome::footer() }}
+
+  <script type="module">
+    import init, { pixelize } from "{{ get_url(path='pixelizer/pixelizer_wasm.js') | safe }}";
+
+    // --- Load the WASM module ---
+    const wasmReady = init("{{ get_url(path='pixelizer/pixelizer_wasm_bg.wasm') | safe }}")
+      .catch((e) => { showError("Failed to load WASM: " + e); throw e; });
+
+    // --- DOM handles ---
+    const $ = (id) => document.getElementById(id);
+    const fileInput   = $("file-input");
+    const runBtn      = $("run-btn");
+    const canvas      = $("output-canvas");
+    const ctx         = canvas.getContext("2d");
+    const viewport    = $("viewport");
+    const placeholder = $("placeholder");
+    const statusEl    = $("status");
+    const errorEl     = $("error-msg");
+    const downloadBtn = $("download-btn");
+    const dimsEl      = $("dims");
+
+    let imageBytes = null; // Uint8Array of the uploaded file
+
+    // ============================================================
+    // Per-op param collapsing
+    // Each [data-params-for="X"] is shown/hidden by checkbox #op-X.
+    // ============================================================
+    document.querySelectorAll("[data-params-for]").forEach((block) => {
+      const op = block.getAttribute("data-params-for");
+      const cb = $("op-" + op);
+      if (!cb) return;
+      const sync = () => block.classList.toggle("hidden", !cb.checked);
+      cb.addEventListener("change", sync);
+      sync();
+    });
+
+    // --- Live value readouts for the range sliders ---
+    for (const [slider, out] of [
+      ["pixel_size-size", "pixel_size-size-out"],
+      ["blur-sigma", "blur-sigma-out"],
+      ["posterize-levels", "posterize-levels-out"],
+      ["upscale-factor", "upscale-factor-out"],
+    ]) {
+      const s = $(slider), o = $(out);
+      s.addEventListener("input", () => { o.textContent = s.value; });
+    }
+
+    // --- Dither algorithm switches which param block is shown ---
+    const ditherAlgo = $("dither-algorithm");
+    function syncDitherParams() {
+      const ordered = ditherAlgo.value === "bayer4" || ditherAlgo.value === "bayer8";
+      $("dither-diffuse-params").classList.toggle("hidden", ordered);
+      $("dither-ordered-params").classList.toggle("hidden", !ordered);
+    }
+    ditherAlgo.addEventListener("change", syncDitherParams);
+    syncDitherParams();
+
+    // --- Palette swatch management ---
+    let palette = ["#2c2416", "#6e5a3d", "#a08658", "#c4a875"];
+    const paletteList = $("palette-list");
+
+    function renderPalette() {
+      paletteList.innerHTML = "";
+      palette.forEach((color, i) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.title = color + " (click to remove)";
+        chip.className = "h-8 w-8 rounded border border-slate-600";
+        chip.style.backgroundColor = color;
+        chip.addEventListener("click", () => {
+          palette.splice(i, 1);
+          renderPalette();
+        });
+        paletteList.appendChild(chip);
+      });
+      if (palette.length === 0) {
+        const note = document.createElement("span");
+        note.className = "text-xs text-slate-500";
+        note.textContent = "No colors \u2014 palette map will error if enabled.";
+        paletteList.appendChild(note);
+      }
+    }
+    $("palette-add").addEventListener("click", () => {
+      palette.push($("palette-new").value);
+      renderPalette();
+    });
+    renderPalette();
+
+    // ============================================================
+    // Zoom system
+    // Canvas backing store is always true image resolution; CSS
+    // width scales it visually only, so the exported PNG is
+    // unaffected. Fit = largest zoom <= 100 that fits the viewport.
+    // ============================================================
+    const zoomSlider  = $("zoom-slider");
+    const zoomInput   = $("zoom-input");
+    const zoomFitBtn  = $("zoom-fit");
+    const zoomToolbar = $("zoom-toolbar");
+
+    const VIEWPORT_PAD = 32; // matches p-4 (1rem) on each side
+
+    function applyZoom(pct) {
+      pct = Math.max(10, Math.min(100, Math.round(pct)));
+      zoomSlider.value = pct;
+      zoomInput.value = pct;
+      if (canvas.width > 0) {
+        canvas.style.width = (canvas.width * pct / 100) + "px";
+        canvas.style.height = "auto";
+      }
+      return pct;
+    }
+
+    function fitZoom() {
+      if (!canvas.width) return 100;
+      const availW = viewport.clientWidth - VIEWPORT_PAD;
+      const availH = viewport.clientHeight - VIEWPORT_PAD;
+      const scale = Math.min(availW / canvas.width, availH / canvas.height, 1);
+      return applyZoom(scale * 100);
+    }
+
+    // Re-fit on resize ONLY while at fit scale, so a manual zoom isn't clobbered.
+    let atFitScale = true;
+    zoomSlider.addEventListener("input", () => { atFitScale = false; applyZoom(Number(zoomSlider.value)); });
+    zoomInput.addEventListener("input",  () => { atFitScale = false; applyZoom(Number(zoomInput.value)); });
+    zoomFitBtn.addEventListener("click", () => { atFitScale = true; fitZoom(); });
+
+    let resizeRaf = 0;
+    new ResizeObserver(() => {
+      if (!atFitScale || !canvas.width) return;
+      cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(fitZoom);
+    }).observe(viewport);
+
+    // --- File handling ---
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      imageBytes = new Uint8Array(await file.arrayBuffer());
+      runBtn.disabled = false;
+      clearError();
+    });
+
+    // --- Build the Pipeline object that serde will deserialize ---
+    function buildPipeline() {
+      const ops = [];
+
+      if ($("op-pixel_size").checked) {
+        ops.push({ type: "pixel_size", size: Number($("pixel_size-size").value) });
+      }
+      if ($("op-trim_height").checked) {
+        ops.push({ type: "trim_height", mode: $("trim_height-mode").value });
+      }
+      if ($("op-trim_width").checked) {
+        ops.push({ type: "trim_width", mode: $("trim_width-mode").value });
+      }
+      if ($("op-normalize").checked) {
+        ops.push({
+          type: "normalize",
+          low: Number($("normalize-low").value),
+          high: Number($("normalize-high").value),
+        });
+      }
+      if ($("op-blur").checked) {
+        ops.push({ type: "blur", sigma: Number($("blur-sigma").value) });
+      }
+      if ($("op-downsample").checked) {
+        ops.push({ type: "downsample" });
+      }
+      if ($("op-posterize").checked) {
+        ops.push({ type: "posterize", levels: Number($("posterize-levels").value) });
+      }
+      if ($("op-palette_map").checked) {
+        const op = { type: "palette_map", colors: palette.slice() };
+        if ($("op-dither").checked) {
+          const algo = ditherAlgo.value;
+          if (algo === "bayer4" || algo === "bayer8") {
+            op.dither = { algorithm: algo, strength: Number($("dither-strength").value) };
+          } else {
+            op.dither = {
+              algorithm: algo,
+              bleed: Number($("dither-bleed").value),
+              clamp: $("dither-clamp").checked,
+            };
+          }
+        }
+        ops.push(op);
+      }
+      if ($("op-upscale").checked) {
+        ops.push({ type: "upscale", factor: Number($("upscale-factor").value) });
+      }
+
+      return { operations: ops };
+    }
+
+    // --- Run ---
+    runBtn.addEventListener("click", async () => {
+      if (!imageBytes) return;
+      clearError();
+      setBusy(true);
+
+      // Yield a frame so the "Processing…" overlay paints before the
+      // synchronous WASM call blocks the main thread.
+      await new Promise((r) => requestAnimationFrame(r));
+
+      try {
+        await wasmReady;
+        const pipelineJson = JSON.stringify(buildPipeline());
+        const result = pixelize(imageBytes, pipelineJson);
+
+        const w = result.width, h = result.height;
+        const bytes = result.data; // Uint8Array, RGBA8, length w*h*4
+        const imageData = new ImageData(new Uint8ClampedArray(bytes), w, h);
+
+        canvas.width = w;
+        canvas.height = h;
+        ctx.putImageData(imageData, 0, 0);
+
+        placeholder.classList.add("hidden");
+        zoomToolbar.classList.remove("hidden");
+        downloadBtn.classList.remove("hidden");
+        downloadBtn.href = canvas.toDataURL("image/png");
+        downloadBtn.download = "pixelized.png";
+
+        dimsEl.textContent = `${w} \u00d7 ${h} px`;
+        dimsEl.classList.remove("hidden");
+
+        // Always auto-fit after a run; manual zoom overrides until next run.
+        atFitScale = true;
+        fitZoom();
+      } catch (e) {
+        showError(String(e.message || e));
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    // --- UI helpers ---
+    function setBusy(b) {
+      statusEl.classList.toggle("hidden", !b);
+      runBtn.disabled = b || !imageBytes;
+    }
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.remove("hidden");
+    }
+    function clearError() {
+      errorEl.classList.add("hidden");
+      errorEl.textContent = "";
+    }
+  </script>
+
+</body>
+
+</html>

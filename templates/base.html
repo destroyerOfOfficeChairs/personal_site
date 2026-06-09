@@ -1,4 +1,5 @@
 {% import "meta_macro.html" as meta_macro %}
+{% import "nav.html" as chrome %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,18 +13,7 @@
 
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
 
-  <!-- Global Navigation -->
-  <nav class="p-4 border-b border-slate-800">
-    <div class="max-w-4xl mx-auto flex gap-4 font-bold text-teal-400">
-      {% set home = get_section(path="_index.md") %}
-      {% set blog = get_section(path="blog/_index.md") %}
-      {% set pixelizer = get_page(path="pixelizer.md") %}
-
-      <a href="{{ home.permalink }}" class="hover:text-teal-300 transition-colors">{{ home.title }}</a>
-      <a href="{{ blog.permalink }}" class="hover:text-teal-300 transition-colors">{{ blog.title }}</a>
-      <a href="{{ pixelizer.permalink }}" class="hover:text-teal-300 transition-colors">{{ pixelizer.title }}</a>
-    </div>
-  </nav>
+  {{ chrome::nav() }}
 
   <!-- Main Content Area -->
   <main class="flex-grow max-w-4xl mx-auto p-8 w-full">
@@ -32,11 +22,7 @@
     {% endblock content %}
   </main>
 
-  <!-- Global Footer -->
-  <footer class="p-6 border-t border-slate-800 text-center text-slate-500 text-sm mt-auto">
-    &copy; {{ now() | date(format="%Y") }} William Joel Bryan
-    <br>
-  </footer>
+  {{ chrome::footer() }}
 
 </body>
 

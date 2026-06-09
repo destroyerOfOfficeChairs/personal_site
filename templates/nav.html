@@ -1,0 +1,34 @@
+{# ============================================================
+   Shared site chrome: navigation + footer.
+
+   Factored out of base.html so any template can render the same
+   nav/footer without copy-pasting markup. base.html uses these
+   too, so there is a single source of truth.
+
+   Usage in a template:
+     {% import "nav.html" as chrome %}
+     {{ chrome::nav() }}
+     ...
+     {{ chrome::footer() }}
+   ============================================================ #}
+
+{% macro nav() %}
+<nav class="p-4 border-b border-slate-800">
+  <div class="max-w-4xl mx-auto flex gap-4 font-bold text-teal-400">
+    {% set home = get_section(path="_index.md") %}
+    {% set blog = get_section(path="blog/_index.md") %}
+    {% set pixelizer = get_page(path="pixelizer.md") %}
+
+    <a href="{{ home.permalink }}" class="hover:text-teal-300 transition-colors">{{ home.title }}</a>
+    <a href="{{ blog.permalink }}" class="hover:text-teal-300 transition-colors">{{ blog.title }}</a>
+    <a href="{{ pixelizer.permalink }}" class="hover:text-teal-300 transition-colors">{{ pixelizer.title }}</a>
+  </div>
+</nav>
+{% endmacro %}
+
+{% macro footer() %}
+<footer class="p-6 border-t border-slate-800 text-center text-slate-500 text-sm mt-auto">
+  &copy; {{ now() | date(format="%Y") }} William Joel Bryan
+  <br>
+</footer>
+{% endmacro %}

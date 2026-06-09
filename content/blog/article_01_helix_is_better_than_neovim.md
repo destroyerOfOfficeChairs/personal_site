@@ -6,7 +6,7 @@ categories = ["computers"]
 tags = ["helix", "rust", "linux", "coding", "writing"]
 [extra]
 hero = "/images/helix_editor_pixelart_upscaled.png"
-subtitle = "I said what I said."
+subtitle = "I escaped configuration hell!"
 +++
 
 I spent way too many hours trying to get a good Neovim setup. After endless hours of following tutorials, and gluing together way too many plugins, and generally not really knowing what was going on, I decided I needed a modal editor that _just works_.
@@ -56,5 +56,3 @@ Just like Rust, Helix was built with modern defaults. It doesn't assume you live
 Neovim is a fantastic hobby if you want to build a personalized IDE from scratch. I don't have time for that.
 
 But if you want a modern, terminal-based editor that provides a world-class development experience without the configuration sinkhole, Helix is the undeniable winner.
-
-I said what I said.

@@ -1,12 +1,12 @@
 +++
-title = "Typst: Because Life Is Too Short For LaTeX"
+title = "Typst Is Better Than LaTeX"
 date = 2026-05-10
 [taxonomies]
 categories = ["computers"]
 tags = ["typst", "rust", "typesetting", "writing"]
 [extra]
 hero = "/images/typst_pixelart_upscaled.png"
-subtitle = "Leave the 1980s behind."
+subtitle = "Typesetting doesn't have to be painful anymore."
 +++
 
 "I love downloading a 4GB TeX Live distribution just to write a two-page PDF." 
