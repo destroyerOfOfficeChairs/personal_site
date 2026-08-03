@@ -17,11 +17,10 @@
   <div class="max-w-4xl mx-auto flex gap-4 font-bold text-teal-400">
     {% set home = get_section(path="_index.md") %}
     {% set blog = get_section(path="blog/_index.md") %}
-    {% set pixelizer = get_page(path="pixelizer.md") %}
 
     <a href="{{ home.permalink }}" class="hover:text-teal-300 transition-colors">{{ home.title }}</a>
     <a href="{{ blog.permalink }}" class="hover:text-teal-300 transition-colors">{{ blog.title }}</a>
-    <a href="{{ pixelizer.permalink }}" class="hover:text-teal-300 transition-colors">{{ pixelizer.title }}</a>
+    <a href="https://pixelplumb.wjcreations.com" class="hover:text-teal-300 transition-colors">Pixel Plumb</a>
   </div>
 </nav>
 {% endmacro %}
