@@ -1,24 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Check if either process is currently running
-if pgrep -x "zola" > /dev/null || pgrep -f "tailwind_cli.*--watch" > /dev/null; then
-    echo "Stopping development servers..."
-    
-    # Kill the processes
-    pkill -x zola
-    pkill -f "tailwind_cli.*--watch"
-    
-    echo "Servers stopped."
-else
-    echo "Starting development servers in the background..."
-    
-    # Start Tailwind in the background. 
-    # The > /dev/null 2>&1 hides its text output so it doesn't spam your terminal.
-    ./tailwind_cli -i ./sass/tailwind.css -o ./static/css/style.css --watch > /tmp/tailwind.log 2>&1 &
+cd "$(dirname "$0")"
 
-    # Start Zola in the background.
-    zola serve > /dev/null 2>&1 &
-    
-    echo "Servers are running! You can now use this terminal to develop."
-    echo "(Run ./dev.sh again to shut them down)"
-fi
+CSS_IN="sass/tailwind.css"
+CSS_OUT="static/css/style.css"
+
+# Build once in the foreground. If Tailwind errors, stop here —
+# no point serving a site whose CSS silently didn't regenerate.
+echo "==> Building CSS"
+./tailwind_cli -i "$CSS_IN" -o "$CSS_OUT"
+
+cleanup() {
+  trap - EXIT INT TERM
+  echo
+  echo "==> Shutting down"
+  kill "${css_pid:-}" "${zola_pid:-}" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
+echo "==> Starting watchers (Ctrl+C to stop)"
+./tailwind_cli -i "$CSS_IN" -o "$CSS_OUT" --watch &
+css_pid=$!
+zola serve &
+zola_pid=$!
+
+wait
