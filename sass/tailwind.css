@@ -2,3 +2,7 @@
 @plugin "@tailwindcss/typography";
 @source "../templates/**/*.html";
 @source "../content/**/*.md";
+
+@utility pixelated {
+  image-rendering: pixelated;
+}

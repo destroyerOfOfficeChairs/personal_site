@@ -23,9 +23,9 @@
     {{ macros::article_taxonomies(page=page) }}
 
     {% if page.extra.hero %}
-    {% set thumbnail = resize_image(path=page.extra.hero, height=400, op="fit_height") %}
     <div class="flex justify-center mt-6">
-      <img src="{{ thumbnail.url}}" alt="{{ page.title }}" class="object-cover rounded-lg shadow-lg">
+      <img src="{{ page.extra.hero }}" alt="{{ page.title }}"
+          class="pixelated w-full max-w-xl h-auto rounded-lg shadow-lg">
     </div>
     {% endif %}
   </header>
