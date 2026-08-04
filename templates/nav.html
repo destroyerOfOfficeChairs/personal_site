@@ -7,22 +7,45 @@
 
    Usage in a template:
      {% import "nav.html" as chrome %}
-     {{ chrome::nav() }}
+     {{ chrome::nav(current=current_path | default(value="/")) }}
      ...
      {{ chrome::footer() }}
+
+   `current` is passed in explicitly rather than read from the
+   template context, so the macro works the same no matter which
+   template calls it.
    ============================================================ #}
 
-{% macro nav() %}
+{# Single nav link. `active` decides teal + underline vs. muted. #}
+{% macro nav_link(url, label, active=false, external=false) %}
+<a href="{{ url }}"
+  {% if active %}aria-current="page"{% endif %}
+  {% if external %}rel="noopener"{% endif %}
+  class="pb-1 border-b-2 transition-colors {% if active %}text-teal-400 border-teal-400{% else %}text-slate-400 border-transparent hover:text-teal-300{% endif %}">{{ label }}{% if external %} <span aria-hidden="true">&#8599;</span>{% endif %}</a>
+{% endmacro %}
+
+{% macro nav(current="/") %}
 <nav class="p-4 border-b border-slate-800">
-  <div class="max-w-4xl mx-auto flex gap-4 font-bold text-teal-400">
+  <div class="max-w-4xl mx-auto flex gap-6 font-bold">
     {% set home = get_section(path="_index.md") %}
     {% set blog = get_section(path="blog/_index.md") %}
     {% set about = get_page(path="about.md") %}
 
-    <a href="{{ home.permalink }}" class="hover:text-teal-300 transition-colors">{{ home.title }}</a>
-    <a href="{{ blog.permalink }}" class="hover:text-teal-300 transition-colors">{{ blog.title }}</a>
-    <a href="{{ about.permalink }}" class="hover:text-teal-300 transition-colors">{{ about.title }}</a>
-    <a href="https://pixelplumb.wjcreations.com" class="hover:text-teal-300 transition-colors">Pixel Plumb</a>
+    {% set on = "text-teal-400 border-teal-400" %}
+    {% set off = "text-slate-400 border-transparent hover:text-teal-300" %}
+    {% set base = "pb-1 border-b-2 transition-colors " %}
+
+    <a href="{{ home.permalink }}"
+       class="{{ base }}{% if current == '/' %}{{ on }}{% else %}{{ off }}{% endif %}">{{ home.title }}</a>
+
+    <a href="{{ blog.permalink }}"
+       class="{{ base }}{% if current is starting_with('/blog') %}{{ on }}{% else %}{{ off }}{% endif %}">{{ blog.title }}</a>
+
+    <a href="{{ about.permalink }}"
+       class="{{ base }}{% if current is starting_with('/about') %}{{ on }}{% else %}{{ off }}{% endif %}">{{ about.title }}</a>
+
+    <a href="https://pixelplumb.wjcreations.com" rel="noopener"
+       class="{{ base }}{{ off }}">Pixel Plumb <span aria-hidden="true">&#8599;</span></a>
   </div>
 </nav>
 {% endmacro %}

@@ -23,9 +23,9 @@ hero = "/images/helix_logo_pixelplumb.png"
 subtitle = "I escaped configuration hell. You can too, if you stop enjoying it."
 +++
 
-You saw your favorite tech YouTuber using NeoVim and decided to try it yourself. It's hard to get anything done because you spend so much time trying to understand why your copy-pasted config files are not working the way you want.
+You saw your favorite tech YouTuber using Neovim and decided to try it yourself. It's hard to get anything done because you spend so much time trying to understand why your copy-pasted config files are not working the way you want.
 
-It's not your fault. NeoVim actually sucks.
+It's not your fault. Neovim actually sucks.
 
 I did the same thing for years. Let me show you what I stopped doing.
 
@@ -54,15 +54,27 @@ end
 vim.opt.rtp:prepend(lazypath)
 ```
 
-Read that again. Your **text editor configuration** contains error handling for a failed `git clone`. There is a code path in your `init.lua` for "the network is down." You have written a bootstrapper. You were trying to edit a file.
+Your **text editor configuration** needs you to write a fucking bootstrapper just to _start_ working with packages. And that's before any of it does anything. Now you need:
 
-Here is the Helix equivalent:
+- `nvim-lspconfig`, to talk to language servers
+- `mason.nvim`, to install the language servers
+- `mason-lspconfig`, to make those two agree on what a language server is called
+- `nvim-cmp`, for completion
+- `cmp-nvim-lsp`, to bridge completion to LSP
+- `LuaSnip`, because `nvim-cmp` requires a snippet engine whether or not you want snippets
+- `cmp_luasnip`, to bridge the snippet engine to the completion engine
+
+Seven plugins, three of which exist purely to introduce the other four to each other. Then you get to go through _pages and pages_ of documentation and _hours_ of configuration before any of it produces a single diagnostic.
+
+Want a language server in Helix? Here's what you do:
 
 ```
 $ rustup component add rust-analyzer
 ```
 
-That's the whole thing. Syntax highlighting, completion, inline diagnostics, goto-definition. It shipped in the binary. Nobody had to be introduced to anyone.
+That's the whole thing. You just install a language server.
+
+So does the Neovim user, eventually, after assembling the machine that installs it. The difference is that the LSP client already shipped in the Helix binary. You dropped a server on the disk and Helix knew what to do with it.
 
 # Exhibit B: The Config
 
@@ -85,7 +97,7 @@ auto-format = true
 
 Six meaningful lines. Two files. Done.
 
-The equivalent in NeoVim is _several_ files of bullshit. I will not be adding that here for comparison's sake.
+The equivalent in Neovim is _several_ files of bullshit. I've already shown you one bootstrapper today. I will not be doing that again.
 
 # Exhibit C: Multiple Cursors
 
@@ -111,19 +123,19 @@ It takes about a day to switch. You will spend that day pressing `dw` and deleti
 
 # Your Objections Are Terrible
 
-**"Just use kickstart.nvim / LazyVim / AstroNvim."** Sure. And notice what you just did: you recommended a *distribution* of an editor. Distributions exist when the defaults are wrong. You've conceded the entire argument and dressed it up as a solution. Also, now you're running four thousand lines of someone else's Lua that you don't understand, which is precisely the situation you think Neovim's configurability was protecting you from.
-
-**"Helix has no plugin system."** This one's fair, and it's the real answer to "why not Helix." The Steel/Scheme plugin work has been in progress for a long time and isn't stable. If you need a niche integration, Helix may genuinely not have it, and I'm not going to pretend otherwise.
-
-But interrogate what you actually need plugins *for*. LSP: built in. Tree-sitter: built in. Fuzzy file picker: built in. Multi-cursors: built in. Git gutter: built in. Debugger: built in. The overwhelming majority of a Neovim plugin list is reconstructing features Helix ships.
+**"Just use kickstart.nvim / LazyVim / AstroNvim."** Sure. And notice what you just did: you recommended a *distribution* of an editor. Distributions exist when the defaults are wrong. You've conceded the entire argument and dressed it up as a solution. Also, now you're running four thousand lines of someone else's Lua that you don't understand, which is precisely the situation you think Neovim's configurability is protecting you from.
 
 **"Muh muscle memory."** You learned Vim's keybinds. You are capable of learning a second thing.
 
 **"Neovim is more powerful because it's programmable."** Emacs is more programmable than both and you don't use that either, so let's be honest that this was never the criterion.
 
+**"Helix has no plugin system."** This one's fair. The Steel/Scheme plugin work has been in progress for a long time and isn't stable. If you need a niche integration, Helix may genuinely not have it.
+
+But interrogate what you actually need plugins *for*. LSP: built in. Tree-sitter: built in. Fuzzy file picker: built in. Multi-cursors: built in. Git gutter: built in. The overwhelming majority of a Neovim plugin list is reconstructing features Helix ships.
+
 # The Verdict
 
-Neovim is a shitty hobby that's been marketed to you as a tool. The cost of the hobby is billed in hours you thought you were working on something.
+Neovim is a shitty hobby that YouTube clickbait has convinced you is an actual tool. The cost of the hobby is billed in hours you thought you were spending on programming.
 
 I wanted to write software. I downloaded one binary. It worked.
 

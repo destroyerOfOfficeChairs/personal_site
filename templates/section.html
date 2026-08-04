@@ -2,10 +2,6 @@
 {% import "macros.html" as macros %}
 
 {% block content %}
-<h1 class="text-4xl font-extrabold text-teal-400 mb-6">
-  {{ section.title }}
-</h1>
-
 <!-- Render the "This is the blog page." text -->
 <div class="prose prose-invert max-w-none">
   {{ section.content | safe }}
