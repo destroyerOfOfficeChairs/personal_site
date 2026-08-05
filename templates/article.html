@@ -23,8 +23,8 @@
 
     {% if page.extra.hero %}
     <div class="flex justify-center mt-6">
-      <img src="{{ page.extra.hero }}" alt="{{ page.title }}"
-          class="pixelated w-full max-w-xl h-auto rounded-lg shadow-lg">
+      <img src="{{ page.permalink }}{{ page.extra.hero }}" alt="{{ page.title }}"
+        class="pixelated w-full max-w-xl h-auto rounded-lg shadow-lg">
     </div>
     {% endif %}
   </header>

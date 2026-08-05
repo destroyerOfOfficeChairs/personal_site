@@ -1,15 +1,19 @@
 +++
 title = "Helix Is Better Than Neovim"
 date = 2026-05-09
-slug = "helix-vs-neovim"
+
+# This is how you set the slug:
+# slug = "neovim-sucks"
+
 [taxonomies]
 categories = ["computers"]
 tags = ["helix", "rust", "linux", "coding", "writing"]
+
 [extra]
 # hero: on-site image. Native pixel-art resolution (96x64), scaled up
 # by CSS with image-rendering: pixelated. Keep it small — do NOT
 # pre-upscale, or the browser blurs an already-blurry file.
-hero = "/images/helix_logo_pixelplumb.png"
+hero = "helix_logo_pixelplumb.png"
 
 # share: Open Graph / Twitter card image. Must be a real 1200x630 file,
 # pre-upscaled with nearest-neighbor (120x63 native at 10x). Social

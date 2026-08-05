@@ -1,13 +1,13 @@
 +++
 title = "Typst Is Better Than LaTeX"
 date = 2026-05-10
-slug = "typst-vs-latex"
+
 [taxonomies]
 categories = ["computers"]
 tags = ["typst", "rust", "typesetting", "writing"]
+
 [extra]
-hero = "/images/typst_logo_pixelplumb.png"
-share = "/images/typst_share.png"
+hero = "typst_logo_pixelplumb.png"
 subtitle = "A eulogy nobody asked for, delivered at a funeral nobody scheduled."
 +++
 
