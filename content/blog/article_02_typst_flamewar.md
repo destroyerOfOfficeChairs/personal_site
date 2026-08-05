@@ -45,7 +45,31 @@ That's it. That's the file. The margins are already sane. The font already rende
 
 If your response to this is "but the boilerplate is in a template I copy around," congratulations, you've invented a workaround for a problem that shouldn't exist and you're bragging about it.
 
-# Exhibit B: The Time You Wanted A Reusable Note Box
+# Exhibit B: Basic Arithmetic
+
+Suppose you want to add two numbers together and print the result. I want you to really sit with how modest a request this is.
+
+LaTeX:
+
+```latex
+\newcounter{total}
+\setcounter{total}{40}
+\addtocounter{total}{2}
+The answer is \thetotal.
+```
+
+You have to allocate a counter. There is a finite number of them, by the way --- classic TeX gives you 256, and yes, people have run out. You then mutate it with a dedicated command, and read it back with a *different* command that is the word "the" glued onto the front of your variable name.
+
+Typst:
+
+```typst
+#let total = 40 + 2
+The answer is #total.
+```
+
+It's a variable. Mind-boggling, I know.
+
+# Exhibit C: The Time You Wanted A Reusable Note Box
 
 You want a little callout box. Bold label, indented, shaded background. A thing every word processor has had since Clippy was alive.
 
@@ -75,8 +99,6 @@ Look at those percent signs. Do you know what those are for? They're there to ea
 
 You either spend 40 minutes looking at decades-old forum posts, or you pray to the LLM gods, only to find out that the fix is an arbitrary punctuation mark at the end of a line.
 
-You are hand-managing invisible whitespace. In a document. In this century.
-
 Typst:
 
 ```typst
@@ -89,30 +111,6 @@ Typst:
 ```
 
 It's a function. It takes an argument. The argument has a *name*, not a number. Nothing is invisible. Nothing needs to be suppressed. It works the first time.
-
-# Exhibit C: Basic Arithmetic
-
-Suppose you want to add two numbers together and print the result. I want you to really sit with how modest a request this is.
-
-LaTeX:
-
-```latex
-\newcounter{total}
-\setcounter{total}{40}
-\addtocounter{total}{2}
-The answer is \thetotal.
-```
-
-You have to allocate a counter. There is a finite number of them, by the way --- classic TeX gives you 256, and yes, people have run out. You then mutate it with a dedicated command, and read it back with a *different* command that is the word "the" glued onto the front of your variable name.
-
-Typst:
-
-```typst
-#let total = 40 + 2
-The answer is #total.
-```
-
-It's a variable. Mind-boggling, I know.
 
 # Exhibit D: A Loop
 
@@ -145,7 +143,7 @@ Badness. Ten thousand. That's the actual word. Not "your line spacing looks stre
 
 Typst points at the line, tells you what it expected, and tells you what it got. In English. Like software that respects you.
 
-# Your Objections Are Terrible
+# Your Objections Are Stupid
 
 **"The ecosystem isn't as mature."** Correct. LaTeX has had 50 years to accumulate 6,000 packages, roughly nine of which are maintained, and the one you need conflicts with the one your university template requires.
 

@@ -29,6 +29,7 @@
   <div class="max-w-4xl mx-auto flex gap-6 font-bold">
     {% set home = get_section(path="_index.md") %}
     {% set blog = get_section(path="blog/_index.md") %}
+    {% set projects = get_section(path="projects/_index.md") %}
     {% set about = get_page(path="about.md") %}
 
     {% set on = "text-teal-400 border-teal-400" %}
@@ -43,6 +44,9 @@
 
     <a href="{{ about.permalink }}"
        class="{{ base }}{% if current is starting_with('/about') %}{{ on }}{% else %}{{ off }}{% endif %}">{{ about.title }}</a>
+
+    <a href="{{ projects.permalink }}"
+       class="{{ base }}{% if current is starting_with('/projects') %}{{ on }}{% else %}{{ off }}{% endif %}">{{ projects.title }}</a>
 
     <a href="https://pixelplumb.wjcreations.com" rel="noopener"
        class="{{ base }}{{ off }}">Pixel Plumb <span aria-hidden="true">&#8599;</span></a>

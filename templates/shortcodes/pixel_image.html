@@ -1,0 +1,16 @@
+{#
+Example usages of this shortcode:
+
+{{ pixel(src="/images/pp_bayer.png", alt="Bayer dithered output") }}
+
+{{ pixel(src="/images/pp_atkinson.png", alt="Atkinson dithering", caption="Atkinson diffuses only 6/8 of the error, which lightens the image.") }}
+
+{{ pixel(src="/images/pp_wide.png", alt="Full pipeline", width="max-w-2xl") }}
+#}
+<figure class="my-6">
+  <img src="{{ src }}" alt="{{ alt | default(value='') }}"
+    class="pixelated mx-auto h-auto w-full {{ width | default(value='max-w-md') }} rounded">
+  {% if caption %}
+  <figcaption class="mt-2 text-center text-sm text-slate-500">{{ caption }}</figcaption>
+  {% endif %}
+</figure>

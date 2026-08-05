@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+
+{% block content %}
+<article class="max-w-3xl mx-auto">
+  <header class="mb-8 border-b border-slate-800 pb-8">
+    <h1 class="text-4xl font-extrabold text-teal-400 mb-4">{{ page.title }}</h1>
+
+    {% if page.extra.tagline %}
+    <p class="text-xl text-slate-400 mb-4">{{ page.extra.tagline }}</p>
+    {% endif %}
+
+    <div class="flex flex-wrap gap-4 text-sm font-bold">
+      {% if page.extra.url %}
+      <a href="{{ page.extra.url }}" rel="noopener"
+         class="text-teal-400 hover:text-teal-300 transition-colors">Try it <span aria-hidden="true">&#8599;</span></a>
+      {% endif %}
+      {% if page.extra.repo %}
+      <a href="{{ page.extra.repo }}" rel="noopener"
+         class="text-teal-400 hover:text-teal-300 transition-colors">Source <span aria-hidden="true">&#8599;</span></a>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="prose prose-invert max-w-none">
+    {{ page.content | safe }}
+  </div>
+</article>
+{% endblock content %}

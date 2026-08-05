@@ -3,30 +3,6 @@
 
 {% block content %}
 <article class="max-w-3xl mx-auto">
-  <!-- Article Header -->
-  <header class="mb-8 border-b border-slate-800 pb-8">
-    {% if page.extra.subtitle %}
-    <h2 class="text-teal-400 mb-4">
-      {{ page.extra.subtitle }}
-    </h2>
-    {% endif %}
-
-    {% if page.date %}
-    <p class="text-slate-500 text-sm mb-2">{{ page.date | date(format="%B %d, %Y") }}</p>
-    {% endif %}
-
-    <!-- Render the clickable taxonomies for this article -->
-    {{ macros::article_taxonomies(page=page) }}
-
-    {% if page.extra.hero %}
-    <div class="flex justify-center mt-6">
-      <img src="{{ page.extra.hero }}" alt="{{ page.title }}"
-          class="pixelated w-full max-w-xl h-auto rounded-lg shadow-lg">
-    </div>
-    {% endif %}
-  </header>
-
-  <!-- Article Content -->
   <div class="prose prose-invert max-w-none">
     {{ page.content | safe }}
   </div>

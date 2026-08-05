@@ -2,32 +2,13 @@
 {% import "macros.html" as macros %}
 
 {% block content %}
-<!-- Render the "This is the blog page." text -->
+<h1 class="text-4xl font-extrabold text-teal-400 mb-6">{{ section.title }}</h1>
+
 <div class="prose prose-invert max-w-none">
   {{ section.content | safe }}
 </div>
 
-<!-- Render all the articles in this section -->
-{{ macros::blogfeed(posts=paginator.pages) }}
-
-{% if paginator.previous or paginator.next %}
-<nav class="flex justify-between items-center mt-12 pt-6 border-t border-slate-800">
-
-  {% if paginator.previous %}
-  <a href="{{ paginator.previous }}" class="text-teal-400 hover:text-teal-300 font-bold transition-colors">&larr;
-    Newer</a>
-  {% else %}
-  <span class="text-slate-700 font-bold cursor-not-allowed">&larr; Newer</span>
-  {% endif %}
-
-  <span class="text-slate-500 text-sm">Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</span>
-
-  {% if paginator.next %}
-  <a href="{{ paginator.next }}" class="text-teal-400 hover:text-teal-300 font-bold transition-colors">Older &rarr;</a>
-  {% else %}
-  <span class="text-slate-700 font-bold cursor-not-allowed">Older &rarr;</span>
-  {% endif %}
-
-</nav>
+{% if section.pages %}
+{{ macros::blogfeed(posts=section.pages) }}
 {% endif %}
 {% endblock content %}

@@ -1,0 +1,69 @@
+{# ============================================================
+   Project display macros.
+
+   Kept separate from macros.html, which handles blog cards and
+   taxonomies. These read from pages in content/projects/.
+
+   Expected page.extra fields:
+     tagline  - one-line description (required)
+     url      - live link (optional)
+     repo     - source link (optional)
+     before   - source image path (optional, pairs with `after`)
+     after    - processed image path (optional, pairs with `before`)
+     featured - bool, picks the homepage project
+
+   Usage:
+     {% import "project_macros.html" as projects %}
+     {{ projects::featured(project=p) }}
+   ============================================================ #}
+
+{% macro featured(project) %}
+<section class="mb-12 rounded-lg border border-slate-800 p-6">
+
+  <p class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-4">
+    Featured project
+  </p>
+
+  {% if project.extra.before and project.extra.after %}
+  <div class="flex items-center justify-center gap-4 mb-6">
+    <img src="{{ project.extra.before }}" alt="Source image"
+      class="pixelated w-full max-w-[288px] h-auto rounded">
+    <span class="shrink-0 text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
+    <img src="{{ project.extra.after }}" alt="The same image after processing"
+      class="pixelated w-full max-w-[288px] h-auto rounded">
+  </div>
+  {% endif %}
+
+  <h2 class="text-2xl font-bold text-slate-100 mb-2">
+    <a href="{{ project.permalink }}" class="hover:text-teal-300 transition-colors">
+      {{ project.title }}
+    </a>
+  </h2>
+
+  {% if project.extra.tagline %}
+  <p class="text-slate-400 mb-4">{{ project.extra.tagline }}</p>
+  {% endif %}
+
+  <div class="flex flex-wrap gap-4 text-sm font-bold">
+    {% if project.extra.url %}
+    <a href="{{ project.extra.url }}" rel="noopener"
+      class="text-teal-400 hover:text-teal-300 transition-colors">
+      Try it <span aria-hidden="true">&#8599;</span>
+    </a>
+    {% endif %}
+
+    {% if project.extra.repo %}
+    <a href="{{ project.extra.repo }}" rel="noopener"
+      class="text-teal-400 hover:text-teal-300 transition-colors">
+      Source <span aria-hidden="true">&#8599;</span>
+    </a>
+    {% endif %}
+
+    <a href="{{ project.permalink }}"
+      class="text-slate-400 hover:text-teal-300 transition-colors">
+      Read more
+    </a>
+  </div>
+
+</section>
+{% endmacro %}

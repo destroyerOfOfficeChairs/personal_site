@@ -121,7 +121,7 @@ Vim's model asks you to hold a mental simulation of the editor's text objects an
 
 It takes about a day to switch. You will spend that day pressing `dw` and deleting a character and selecting a word. Then it will be over and you will never think about it again.
 
-# Your Objections Are Terrible
+# Your Objections Are Stupid
 
 **"Just use kickstart.nvim / LazyVim / AstroNvim."** Sure. And notice what you just did: you recommended a *distribution* of an editor. Distributions exist when the defaults are wrong. You've conceded the entire argument and dressed it up as a solution. Also, now you're running four thousand lines of someone else's Lua that you don't understand, which is precisely the situation you think Neovim's configurability is protecting you from.
 

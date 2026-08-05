@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
+
+{% block content %}
+<h1 class="text-4xl font-extrabold text-teal-400 mb-6">{{ section.title }}</h1>
+
+<div class="prose prose-invert max-w-none mb-8">
+  {{ section.content | safe }}
+</div>
+
+{% for p in section.pages %}
+<div class="mb-4">
+  <h2 class="text-xl font-bold text-slate-100">
+    <a href="{{ p.permalink }}" class="hover:text-teal-300 transition-colors">{{ p.title }}</a>
+  </h2>
+  {% if p.extra.tagline %}<p class="text-slate-400">{{ p.extra.tagline }}</p>{% endif %}
+</div>
+{% endfor %}
+{% endblock content %}
