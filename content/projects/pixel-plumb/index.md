@@ -5,8 +5,8 @@ weight = 1
 tagline = "A pixel-art image pipeline in Rust and WebAssembly."
 url = "https://pixelplumb.wjcreations.com"
 repo = "https://github.com/destroyerOfOfficeChairs/pixel-plumb"
-before = "/images/pp_source.png"
-after = "/images/pp_output.png"
+before = "pp_source.png"
+after = "pp_output.png"
 featured = true
 +++
 

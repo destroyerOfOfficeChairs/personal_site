@@ -3,43 +3,14 @@
 Working notes for wjcreations.com. Delete or archive once the site is live
 and the backlog is empty.
 
-## Next session — start here
-
-1. Rename `templates/shortcodes/pixel_image.html` → `pixel.html` so the
-   shortcode is `{{ pixel(...) }}`, matching the usage comment inside it.
-2. Do the colocation restructure (see below). Everything else is easier
-   once paths are stable.
-
----
-
-## Blocking launch
-
-### Colocation restructure
-
-Move each page to its own directory so images live next to the content
-that uses them.
-
-```
-content/blog/helix-vs-neovim/index.md
-content/blog/typst-vs-latex/index.md
-content/projects/pixel-plumb/index.md
-```
-
-- Directory name becomes the slug — drop the `slug =` lines from front matter.
-- Image references become bare filenames: `hero = "helix.png"`.
-- `zola build` afterward and confirm URLs land where expected.
-- Share cards stay in `static/images/share/` — they're referenced by
-  absolute URL from meta tags and scraped by external services, so their
-  paths need to stay stable.
-
 ### Images to create
 
-| Image | Size | Used by |
-|---|---|---|
-| Featured "before" | source res | homepage featured block |
-| Featured "after" | 96x64 | homepage featured block |
-| Share card (default) | 1200x630 | `meta_macro.html` fallback |
-| Pixel Plumb body images | varies | `{{ pixel() }}` on project page |
+| Image                   | Size       | Used by                         |
+|-------------------------|------------|---------------------------------|
+| Featured "before"       | source res | homepage featured block         |
+| Featured "after"        | 96x64      | homepage featured block         |
+| Share card (default)    | 1200x630   | `meta_macro.html` fallback      |
+| Pixel Plumb body images | varies     | `{{ pixel() }}` on project page |
 
 Reminders:
 - On-site images: native resolution, indexed PNG, scaled by CSS. Display
@@ -120,3 +91,6 @@ Decisions already made, recorded so they don't get relitigated.
   demonstration of the tool.
 - **`dev.sh` runs in the foreground.** Initial CSS build fails loudly
   before any watcher starts.
+- Share cards stay in `static/images/share/` — they're referenced by
+  absolute URL from meta tags and scraped by external services, so their
+  paths need to stay stable.

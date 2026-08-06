@@ -26,10 +26,13 @@
 
   {% if project.extra.before and project.extra.after %}
   <div class="flex items-center justify-center gap-4 mb-6">
-    <img src="{{ project.extra.before }}" alt="Source image"
-      class="pixelated w-full max-w-[288px] h-auto rounded">
+    {% set before = resize_image(path=project.colocated_path ~ project.extra.before,
+                                width=576, op="fit_width",
+                                format="webp", quality=80) %}
+    <img src="{{ before.url }}" alt="Source image"
+      class="w-full max-w-[288px] h-auto rounded">
     <span class="shrink-0 text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
-    <img src="{{ project.extra.after }}" alt="The same image after processing"
+    <img src="{{ project.permalink  }}{{ project.extra.after }}" alt="The same image after processing"
       class="pixelated w-full max-w-[288px] h-auto rounded">
   </div>
   {% endif %}
