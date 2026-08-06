@@ -1,3 +1,4 @@
+{% import "project_macros.html" as projects %}
 {% extends "base.html" %}
 
 {% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
@@ -8,11 +9,6 @@
 </div>
 
 {% for p in section.pages %}
-<div class="mb-4">
-  <h2 class="text-xl font-bold text-slate-100">
-    <a href="{{ p.permalink }}" class="hover:text-teal-300 transition-colors">{{ p.title }}</a>
-  </h2>
-  {% if p.extra.tagline %}<p class="text-slate-400">{{ p.extra.tagline }}</p>{% endif %}
-</div>
+  {{ projects::featured(project=p) }}
 {% endfor %}
 {% endblock content %}
