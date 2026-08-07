@@ -1,0 +1,95 @@
+{# ============================================================
+   compare() — a before/after image pair.
+
+   Self-closing shortcode: {{ compare(...) }}, not {% %}.
+
+   Image paths are resolved relative to the page, so colocated
+   filenames work directly: "sat_off.png", not "/images/sat_off.png".
+
+   Parameters
+     before        image path                        (required)
+     after         image path                        (required)
+     before_label  caption under the left image      (default "Before")
+     after_label   caption under the right image     (default "After")
+     title         header bar text                   (optional)
+     caption       explanatory line beneath the pair (optional)
+     collapsible   bool, default false. Needs a title.
+     open          bool, default true. Content in a closed <details>
+                   is invisible to Ctrl+F.
+     pixelated     bool, default true. Set false when either image is
+                   a photograph — nearest-neighbor scaling is wrong
+                   for continuous-tone images.
+
+   Usage
+     {{ compare(before="sat_off.png", after="sat_on.png") }}
+
+     {{ compare(before="sat_off.png", after="sat_on.png",
+                before_label="Original", after_label="Saturation +40",
+                caption="Applied in OkLab, so hue stays put.") }}
+
+     {{ compare(before="a.png", after="b.png",
+                title="Atkinson dithering",
+                collapsible=true, open=false) }}
+   ============================================================ #}
+
+{%- set before_label = before_label | default(value="Before") -%}
+{%- set after_label = after_label | default(value="After") -%}
+{%- set collapsible = collapsible | default(value=false) -%}
+{%- set open = open | default(value=true) -%}
+{%- set pixelated = pixelated | default(value=true) -%}
+{%- set img_class = "w-full h-auto rounded" -%}
+{%- if pixelated -%}
+  {%- set img_class = "pixelated w-full h-auto rounded" -%}
+{%- endif -%}
+
+{%- if collapsible and title -%}
+
+<details class="not-prose my-6 overflow-hidden rounded-lg border border-slate-800" {% if open %}open{% endif %}>
+  <summary class="cursor-pointer select-none px-4 py-2 text-sm font-bold text-teal-400 hover:bg-slate-800/50 transition-colors">
+    {{ title }}
+  </summary>
+  <div class="border-t border-slate-800 p-4">
+    <div class="flex items-start justify-center gap-4">
+      <figure class="flex-1 max-w-[288px]">
+        <img src="{{ before }}" alt="{{ before_label }}" class="{{ img_class }}">
+        <figcaption class="mt-2 text-center text-xs text-slate-500">{{ before_label }}</figcaption>
+      </figure>
+      <span class="shrink-0 self-center text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
+      <figure class="flex-1 max-w-[288px]">
+        <img src="{{ after }}" alt="{{ after_label }}" class="{{ img_class }}">
+        <figcaption class="mt-2 text-center text-xs text-slate-500">{{ after_label }}</figcaption>
+      </figure>
+    </div>
+    {% if caption %}
+    <p class="mt-4 text-center text-sm text-slate-400">{{ caption }}</p>
+    {% endif %}
+  </div>
+</details>
+
+{%- else -%}
+
+<div class="not-prose my-6 overflow-hidden rounded-lg border border-slate-800">
+  {% if title %}
+  <div class="border-b border-slate-800 px-4 py-2 text-sm font-bold text-teal-400">
+    {{ title }}
+  </div>
+  {% endif %}
+  <div class="p-4">
+    <div class="flex items-start justify-center gap-4">
+      <figure class="flex-1 max-w-[288px]">
+        <img src="{{ before }}" alt="{{ before_label }}" class="{{ img_class }}">
+        <figcaption class="mt-2 text-center text-xs text-slate-500">{{ before_label }}</figcaption>
+      </figure>
+      <span class="shrink-0 self-center text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
+      <figure class="flex-1 max-w-[288px]">
+        <img src="{{ after }}" alt="{{ after_label }}" class="{{ img_class }}">
+        <figcaption class="mt-2 text-center text-xs text-slate-500">{{ after_label }}</figcaption>
+      </figure>
+    </div>
+    {% if caption %}
+    <p class="mt-4 text-center text-sm text-slate-400">{{ caption }}</p>
+    {% endif %}
+  </div>
+</div>
+
+{%- endif -%}

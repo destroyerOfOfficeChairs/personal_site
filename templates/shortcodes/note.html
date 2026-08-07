@@ -1,0 +1,82 @@
+{# ============================================================
+   note() — a callout box for asides, warnings, and tangents.
+
+   Paired shortcode: it wraps body content, so it uses {% %}
+   delimiters and {% end %}, not {{ }}.
+
+   Parameters
+     title        header bar text. Optional and INDEPENDENT of
+                  collapsible — a titled box that doesn't collapse
+                  is a normal thing to want.
+     collapsible  bool, default false. Renders <details>/<summary>.
+                  Requires a title; without one there'd be nothing
+                  to click.
+     open         bool, default true. Only meaningful when
+                  collapsible. Note that content inside a CLOSED
+                  <details> is invisible to the browser's Ctrl+F,
+                  so default to open for anything reference-like.
+     kind         "note" (default), "warn", or "good". Colours the
+                  header bar and left edge.
+
+   Usage
+     {% note() %}
+     Plain box, no header.
+     {% end %}
+
+     {% note(title="Why OkLab?") %}
+     Titled box with a header bar. Always open.
+     {% end %}
+
+     {% note(title="Implementation detail", collapsible=true, open=false) %}
+     Collapsed by default. Good for optional tangents.
+     {% end %}
+
+     {% note(title="Careful", kind="warn") %}
+     Amber accent.
+     {% end %}
+   ============================================================ #}
+
+{%- set kind = kind | default(value="note") -%}
+{%- set collapsible = collapsible | default(value=false) -%}
+{%- set open = open | default(value=true) -%}
+
+{%- if kind == "warn" -%}
+  {%- set edge = "border-l-amber-500" -%}
+  {%- set head = "text-amber-400" -%}
+{%- elif kind == "good" -%}
+  {%- set edge = "border-l-emerald-500" -%}
+  {%- set head = "text-emerald-400" -%}
+{%- else -%}
+  {%- set edge = "border-l-teal-500" -%}
+  {%- set head = "text-teal-400" -%}
+{%- endif -%}
+
+{%- if collapsible and title -%}
+
+<details class="not-prose my-6 overflow-hidden rounded-lg border border-slate-800 border-l-4 {{ edge }} bg-slate-800/30" {% if open %}open{% endif %}>
+  <summary class="cursor-pointer select-none px-4 py-2 text-sm font-bold {{ head }} hover:bg-slate-800/50 transition-colors">
+    {{ title }}
+  </summary>
+  <div class="border-t border-slate-800 px-4 py-3">
+    <div class="prose prose-invert prose-sm max-w-none">
+      {{ body | markdown | safe }}
+    </div>
+  </div>
+</details>
+
+{%- else -%}
+
+<div class="not-prose my-6 overflow-hidden rounded-lg border border-slate-800 border-l-4 {{ edge }} bg-slate-800/30">
+  {% if title %}
+  <div class="border-b border-slate-800 px-4 py-2 text-sm font-bold {{ head }}">
+    {{ title }}
+  </div>
+  {% endif %}
+  <div class="px-4 py-3">
+    <div class="prose prose-invert prose-sm max-w-none">
+      {{ body | markdown | safe }}
+    </div>
+  </div>
+</div>
+
+{%- endif -%}
