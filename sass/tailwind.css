@@ -6,3 +6,7 @@
 @utility pixelated {
   image-rendering: pixelated;
 }
+
+link[rel="icon"] {
+  image-rendering: pixelated;
+}

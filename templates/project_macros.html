@@ -4,36 +4,68 @@
    Kept separate from macros.html, which handles blog cards and
    taxonomies. These read from pages in content/projects/.
 
-   Expected page.extra fields:
-     tagline  - one-line description (required)
-     url      - live link (optional)
-     repo     - source link (optional)
-     before   - source image path (optional, pairs with `after`)
-     after    - processed image path (optional, pairs with `before`)
-     featured - bool, picks the homepage project
+   Two layouts, chosen by WHERE the project renders — not by which
+   project it is:
+
+     featured()  large, image-forward. Homepage, or a highlighted
+                 block at the top of the projects page.
+     card()      compact row. The projects listing.
+
+   Both handle either image style. The `label` is a caption the
+   caller supplies ("Featured project", "Latest", or nothing), so
+   the macro never asserts something that isn't true in context.
+
+   page.extra fields:
+     tagline   one-line description        (recommended)
+     url       live link                   (optional)
+     repo      source link                 (optional)
+     before    source image, colocated     (optional, pairs with after)
+     after     processed image, colocated  (optional, pairs with before)
+     hero      single image, colocated     (optional, used if no pair)
+     featured  bool, filters the homepage  (optional)
+
+   Colocated image paths are page-relative and must be prefixed with
+   the permalink, or they break anywhere they render off their own page.
 
    Usage:
      {% import "project_macros.html" as projects %}
-     {{ projects::featured(project=p) }}
+     {{ projects::featured(project=p, label="Featured project") }}
+     {{ projects::card(project=p) }}
    ============================================================ #}
 
-{% macro featured(project) %}
+
+{# ---------- Large layout ---------- #}
+
+{% macro featured(project, label="") %}
 <section class="mb-12 rounded-lg border border-slate-800 p-6">
 
+  {% if label %}
   <p class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-4">
-    Featured project
+    {{ label }}
   </p>
+  {% endif %}
 
   {% if project.extra.before and project.extra.after %}
+  {# Before/after pair. The source is usually a photo, so it goes through
+     resize_image with smooth resampling; the output is pixel art and must
+     not be resampled at all. #}
   <div class="flex items-center justify-center gap-4 mb-6">
-    {% set before = resize_image(path=project.colocated_path ~ project.extra.before,
-                                width=576, op="fit_width",
-                                format="webp", quality=80) %}
-    <img src="{{ before.url }}" alt="Source image"
+    {% set src = resize_image(path=project.colocated_path ~ project.extra.before,
+                              width=576, op="fit_width",
+                              format="webp", quality=80) %}
+    <img src="{{ src.url }}" alt="Source image"
       class="w-full max-w-[288px] h-auto rounded">
     <span class="shrink-0 text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
-    <img src="{{ project.permalink  }}{{ project.extra.after }}" alt="The same image after processing"
+    <img src="{{ project.permalink }}{{ project.extra.after }}"
+      alt="The same image after processing"
       class="pixelated w-full max-w-[288px] h-auto rounded">
+  </div>
+
+  {% elif project.extra.hero %}
+  <div class="flex justify-center mb-6">
+    <img src="{{ project.permalink }}{{ project.extra.hero }}"
+      alt="{{ project.title }}"
+      class="pixelated w-full max-w-xl h-auto rounded">
   </div>
   {% endif %}
 
@@ -69,4 +101,36 @@
   </div>
 
 </section>
+{% endmacro %}
+
+
+{# ---------- Compact layout ---------- #}
+
+{% macro card(project) %}
+<a href="{{ project.permalink }}"
+  class="group flex flex-col sm:flex-row items-center gap-6 p-4 mb-4 rounded-lg border border-slate-800 hover:bg-slate-800 transition-colors">
+
+  {% if project.extra.after %}
+  {# Show only the output half of a pair — the transformation needs room
+     to read, and this layout doesn't have it. #}
+  <img src="{{ project.permalink }}{{ project.extra.after }}"
+    alt="" aria-hidden="true"
+    class="pixelated shrink-0 w-48 h-auto rounded">
+
+  {% elif project.extra.hero %}
+  <img src="{{ project.permalink }}{{ project.extra.hero }}"
+    alt="" aria-hidden="true"
+    class="pixelated shrink-0 w-48 h-auto rounded">
+  {% endif %}
+
+  <div class="flex flex-col w-full text-center sm:text-left">
+    <h2 class="text-xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors">
+      {{ project.title }}
+    </h2>
+
+    {% if project.extra.tagline %}
+    <p class="text-slate-400 text-sm mt-1">{{ project.extra.tagline }}</p>
+    {% endif %}
+  </div>
+</a>
 {% endmacro %}

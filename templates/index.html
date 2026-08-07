@@ -25,7 +25,9 @@
 
 {% set project_section = get_section(path="projects/_index.md") %}
 {% for p in project_section.pages %}
-  {% if p.extra.featured %}{{ projects::featured(project=p) }}{% endif %}
+  {% if p.extra.featured %}
+    {{ projects::featured(project=p, label="Featured project") }}
+  {% endif %}
 {% endfor %}
 
 <!-- Second Half: Latest 3 Articles -->
