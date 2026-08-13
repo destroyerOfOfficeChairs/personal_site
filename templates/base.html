@@ -18,7 +18,7 @@
   {{ chrome::nav(current=current_path | default(value="/")) }}
 
   <!-- Main Content Area -->
-  <main class="flex-grow max-w-4xl mx-auto p-8 w-full">
+  <main class="grow max-w-4xl mx-auto p-8 w-full">
     {% block content %}
     <!-- Child templates will dump their HTML here -->
     {% endblock content %}
