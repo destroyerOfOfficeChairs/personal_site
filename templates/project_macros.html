@@ -34,52 +34,61 @@
    ============================================================ #}
 
 
-{# ---------- Large layout ---------- #}
+{# ---------- Large layout ----------
+
+   The card body is one big link, matching how the blog and project
+   cards behave. The action links can't live inside it — nested <a>
+   is invalid HTML and breaks keyboard navigation — so they sit in a
+   separate row below, the same way article_taxonomies does.
+#}
 
 {% macro featured(project, label="") %}
-<section class="mb-12 rounded-lg border border-slate-800 p-6">
+<section class="mb-12 overflow-hidden rounded-lg border border-slate-800">
 
-  {% if label %}
-  <p class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-4">
-    {{ label }}
-  </p>
-  {% endif %}
+  <a href="{{ project.permalink }}"
+    class="group block p-6 hover:bg-slate-800/50 transition-colors">
 
-  {% if project.extra.before and project.extra.after %}
-  {# Before/after pair. The source is usually a photo, so it goes through
-     resize_image with smooth resampling; the output is pixel art and must
-     not be resampled at all. #}
-  <div class="flex items-center justify-center gap-4 mb-6">
-    {% set src = resize_image(path=project.colocated_path ~ project.extra.before,
-                              width=576, op="fit_width",
-                              format="webp", quality=80) %}
-    <img src="{{ src.url }}" alt="Source image"
-      class="w-full max-w-[288px] h-auto rounded">
-    <span class="shrink-0 text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
-    <img src="{{ project.permalink }}{{ project.extra.after }}"
-      alt="The same image after processing"
-      class="pixelated w-full max-w-[288px] h-auto rounded">
-  </div>
+    {% if label %}
+    <p class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-4">
+      {{ label }}
+    </p>
+    {% endif %}
 
-  {% elif project.extra.hero %}
-  <div class="flex justify-center mb-6">
-    <img src="{{ project.permalink }}{{ project.extra.hero }}"
-      alt="{{ project.title }}"
-      class="pixelated w-full max-w-xl h-auto rounded">
-  </div>
-  {% endif %}
+    {% if project.extra.before and project.extra.after %}
+    {# The source is usually a photo, so it goes through resize_image with
+       smooth resampling; the output is pixel art and must not be resampled. #}
+    <div class="flex items-center justify-center gap-4 mb-6">
+      {% set src = resize_image(path=project.colocated_path ~ project.extra.before,
+                                width=576, op="fit_width",
+                                format="webp", quality=80) %}
+      <img src="{{ src.url }}" alt="Source image"
+        class="w-full max-w-[288px] h-auto rounded">
+      <span class="shrink-0 text-2xl text-slate-600" aria-hidden="true">&rarr;</span>
+      <img src="{{ project.permalink }}{{ project.extra.after }}"
+        alt="The same image after processing"
+        class="pixelated w-full max-w-[288px] h-auto rounded">
+    </div>
 
-  <h2 class="text-2xl font-bold text-slate-100 mb-2">
-    <a href="{{ project.permalink }}" class="hover:text-teal-300 transition-colors">
+    {% elif project.extra.hero %}
+    <div class="flex justify-center mb-6">
+      <img src="{{ project.permalink }}{{ project.extra.hero }}"
+        alt="" aria-hidden="true"
+        class="pixelated w-full max-w-xl h-auto rounded">
+    </div>
+    {% endif %}
+
+    <h2 class="text-2xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors">
       {{ project.title }}
-    </a>
-  </h2>
+    </h2>
 
-  {% if project.extra.tagline %}
-  <p class="text-slate-400 mb-4">{{ project.extra.tagline }}</p>
-  {% endif %}
+    {% if project.extra.tagline %}
+    <p class="text-slate-400 mt-2">{{ project.extra.tagline }}</p>
+    {% endif %}
 
-  <div class="flex flex-wrap gap-4 text-sm font-bold">
+  </a>
+
+  {# Outside the link. Nested anchors are invalid. #}
+  <div class="flex flex-wrap gap-4 border-t border-slate-800 px-6 py-3 text-sm font-bold">
     {% if project.extra.url %}
     <a href="{{ project.extra.url }}" rel="noopener"
       class="text-teal-400 hover:text-teal-300 transition-colors">

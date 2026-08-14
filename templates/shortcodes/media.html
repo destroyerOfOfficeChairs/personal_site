@@ -1,0 +1,62 @@
+{# ============================================================
+   media() — an image beside a block of text.
+
+   Paired shortcode: it wraps body content, so it uses {% %}
+   delimiters and {% end %}, not {{ }}.
+
+   Stacks vertically on narrow screens, side by side from 640px up.
+
+   Parameters
+     src        image path, page-relative        (required)
+     alt        alt text                         (recommended)
+     side       "left" (default) or "right"      — which side the
+                image sits on at sm+ widths
+     width      Tailwind w-* class for the image (default w-48)
+                Keep it an integer multiple of the native size.
+     pixelated  bool, default true. Set false for photographs.
+     caption    small line under the image       (optional)
+
+   Usage
+     {% media(src="op_dither.png", alt="Atkinson dithering", width="w-64") %}
+     **Error diffusion** spreads quantisation error into neighbouring
+     pixels so the eye blends it back. Atkinson diffuses only 6/8 of
+     the error, which lightens the image.
+     {% end %}
+
+     {% media(src="photo.jpg", alt="A workbench", side="right",
+              pixelated=false, caption="The bench, 2024.") %}
+     Text sits on the left, image on the right.
+     {% end %}
+   ============================================================ #}
+
+{%- set side = side | default(value="left") -%}
+{%- set width = width | default(value="w-48") -%}
+{%- set pixelated = pixelated | default(value=true) -%}
+{%- set alt = alt | default(value="") -%}
+
+{%- if side == "right" -%}
+  {%- set direction = "sm:flex-row-reverse" -%}
+{%- else -%}
+  {%- set direction = "sm:flex-row" -%}
+{%- endif -%}
+
+{%- if pixelated -%}
+  {%- set img_class = "pixelated h-auto rounded " ~ width -%}
+{%- else -%}
+  {%- set img_class = "h-auto rounded " ~ width -%}
+{%- endif -%}
+
+<div class="not-prose my-6 flex flex-col {{ direction }} items-center sm:items-start gap-6">
+
+  <figure class="shrink-0">
+    <img src="{{ src }}" alt="{{ alt }}" class="{{ img_class }}">
+    {% if caption %}
+    <figcaption class="mt-2 text-center text-xs text-slate-500">{{ caption }}</figcaption>
+    {% endif %}
+  </figure>
+
+  <div class="prose prose-invert max-w-none">
+    {{ body | markdown | safe }}
+  </div>
+
+</div>
