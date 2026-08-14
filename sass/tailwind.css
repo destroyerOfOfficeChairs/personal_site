@@ -10,3 +10,11 @@
 link[rel="icon"] {
   image-rendering: pixelated;
 }
+
+main img {
+  cursor: zoom-in;
+}
+
+main a img {
+  cursor: pointer;
+}

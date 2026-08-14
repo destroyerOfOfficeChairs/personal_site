@@ -26,6 +26,49 @@
 
   {{ chrome::footer() }}
 
+<!-- Lightbox: delegated click handler on <main> images. Uses <dialog>
+     for free Escape/focus-trap. Not reviewed line by line — revisit
+     once I know JS/CSS better. -->
+<dialog id="lightbox"
+  class="m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-slate-950/90">
+
+  <button id="lightbox-close" type="button" aria-label="Close image"
+    class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-2xl leading-none text-slate-300 hover:bg-slate-800 hover:text-teal-300 transition-colors">
+    &times;
+  </button>
+
+  <div class="flex h-full w-full items-center justify-center p-4">
+    <img id="lightbox-img" alt="">
+  </div>
+</dialog>
+
+<script>
+(function () {
+  const dlg = document.getElementById('lightbox');
+  const out = document.getElementById('lightbox-img');
+  if (!dlg || !out) return;
+
+  document.addEventListener('click', function (e) {
+    const t = e.target;
+    if (!(t instanceof HTMLImageElement)) return;
+    if (!t.closest('main')) return;      // skip nav, footer
+    if (t.closest('#lightbox')) return;  // skip the lightbox itself
+    if (t.closest('a')) return;          // let card images navigate
+
+    out.src = t.currentSrc || t.src;
+    out.alt = t.alt || '';
+    out.className = (t.classList.contains('pixelated') ? 'pixelated ' : '')
+      + 'h-full w-full object-contain';
+    dlg.showModal();
+  });
+
+  dlg.addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('close', function () { out.removeAttribute('src'); });
+  const closeBtn = document.getElementById('lightbox-close');
+  if (closeBtn) closeBtn.addEventListener('click', function () { dlg.close(); });
+})();
+</script>
+
 </body>
 
 </html>
