@@ -1,49 +1,39 @@
 +++
 title = "About"
-description = "AV control systems programmer, Rust developer, and aspiring novelist."
+description = "About me, and this site."
 template = "page.html"
 +++
 
-I'm William Joel Bryan. I program audiovisual control systems for a living and
-write Rust for fun, which turns out to be less of a contradiction than it sounds.
+This was supposed to be a portfolio site, now I just want to express myself and share my creations with people I love. Thank you for being here.
 
-# The Day Job
+If you know me IRL, I hope you enjoy the things I make and post here. If you're a random stranger on the internet: Hi!
 
-I'm an AV integrator at EDS Solutions, which mostly means Q-SYS: building control
-systems for hospitals, schools, offices, and manufacturing floors. A lot of Lua,
-a fair amount of Dante audio networking, and a recurring appreciation for how
-much of this industry runs on undocumented behavior and hope.
+# Rust
 
-It's a good job for someone who likes figuring out why something doesn't work.
-Most of the interesting problems are diagnostic ones — a design that takes two
-minutes to start up, a script that silently fails once a week, a subscription
-that drops when nobody's watching.
+I've been learning Rust for about a year. I'm kind of obsessed with it now. Most of the things I aim to create and post here will be written in Rust.
 
-# The Other Thing
+# Leather Working
 
-I've been learning Rust for about a year. I came from C and C++ in college and
-set it aside for a long time, and Rust is what brought me back — mostly because
-it takes type systems seriously and tells you *why* something is wrong instead of
-letting you find out in production.
+I like to make little leather trinkets. It's a nice complement to the computer-work I do a lot. I like to make something physical every now and then. My wife wears the shoes I made for her.
 
-My main project is [Pixel Plumb](https://pixelplumb.wjcreations.com), a pixel-art
-image pipeline that runs in the browser via WASM. It does perceptual color
-matching in OkLab and error diffusion in linear light, which is a pretentious way
-of saying it does the color math correctly when most tools don't. The pixel art
-on this site was made with it.
+# Watercolor
 
-# Everything Else
+I like painting with watercolors. I'll add a `Gallery` section here soon.
 
-I write fantasy — currently a novel set in a bronze age world, which is going
-about as fast as novels go. I play D&D. I use Helix and Typst and run Linux
-everywhere I'm allowed to, and I have opinions about all three that you can find
-in the blog.
+# Audio/Visual
 
-I'm also headed to the University of Florence for a master's in software science
-and technology, which is the real reason a lot of the projects here exist.
+I somehow ended up in the low-voltage electrician world which, given my expertise, led to me being an AV systems programmer. If your shop uses Q-Sys, I can contribute.
+
+# Italy
+
+I'm fucking going to Italy! I got accepted into a master's degree program at the University of Florence. I'm excited for the education, but my real motivation is to escape the United States. You know what the kids are saying nowadays: The _new_ American dream is to leave.
 
 # This Site
 
-Built with [Zola](https://www.getzola.org/), styled with Tailwind, deployed to
-GitHub Pages. No analytics, no tracking, no newsletter popup. It's a place to put
-things I've made.
+Built with [Zola](https://www.getzola.org/), a tool written in Rust. I like to stay within the Rust ecosystem. Did I mention I was obsessed?
+
+I added a blog section only because the site felt really small without it. I'm gonna fill it with nerdy opinionated drivel and no one can stop me. I suspect the only people who will read it are those in my circle to whom I send a link, eagerly awaiting a response.
+
+If you've given me any feedback at all (blog articles or projects), thank you.
+
+There's no ads or trackers and I'm not harvesting any of your data to sell to lizard people.
