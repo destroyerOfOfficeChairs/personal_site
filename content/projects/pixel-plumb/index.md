@@ -7,7 +7,7 @@ url = "https://pixelplumb.wjcreations.com"
 repo = "https://github.com/destroyerOfOfficeChairs/pixel-plumb"
 # before = "pp_source.png"
 # after = "pp_output.png"
-before = "girl_with_a_pearl_earring.jpg"
+before = "gwape_source.jpg"
 after = "gwape_oklab.png"
 featured = true
 +++
@@ -18,9 +18,9 @@ Pixel Plumb turns photographs into pixel art. You upload an image, stack up a fe
 
 Almost every pixelation tool maps a limited palette in the RGB color space, which produces results that are visibly wrong.
 
-{{ pixel_art(src="girl_with_a_pearl_earring.jpg",
+{{ pixel_art(src="gwape_source.jpg",
              alt="girl with a pearl earring",
-             caption="The source painting.",
+             caption="The source painting — Vermeer, Girl with a Pearl Earring, Mauritshuis.",
              width="max-w-sm") }}
 
 {{ compare(before="gwape_rgb.png",
@@ -35,7 +35,7 @@ To match a color to a limited palette, you need to ask which palette entry is *c
 Pixel Plumb uses [OkLab](https://bottosson.github.io/posts/oklab/), a perceptual color space where distance actually corresponds to how different two colors look.
 
 {% note(title="Why this matters more than it sounds") %}
-Perceptual color distance isn't an aesthetic preference — it's the difference between a palette match that preserves the structure of an image and one that flattens it. The effect is strongest in skin tones, blues, and anywhere the source has a smooth gradient.
+Perceptual color distance isn't an aesthetic preference -- it's the difference between a palette match that preserves the structure of an image and one that flattens it. The effect is strongest in skin tones, blues, and anywhere the source has a smooth gradient.
 {% end %}
 
 {% note(title="Where OkLab falls short", kind="warn") %}
@@ -57,10 +57,10 @@ palette. Most pipelines use at least one from each.
 
 ### The pixel grid
 
-{{ compare(before="op_downsample_before.png", after="op_downsample_after.png",
+{{ compare(before="gwape_source.jpg", after="gwape_downsample.png",
            title="downsample",
-           before_label="Source", after_label="pixel_size: 8",
-           caption="Nearest-neighbor. The image is cropped first so its dimensions divide evenly — fractional pixels are the enemy.") }}
+           before_label="Source", after_label="pixel_size: 18",
+           caption="Nearest-neighbor. The image is cropped first so its dimensions divide evenly -- fractional pixels are the enemy.") }}
 
 `downsample` is the operation that makes pixel art pixel art. It collapses
 each `pixel_size` block down to a single sample, and it crops before it
@@ -75,11 +75,9 @@ Three operations touch dimensions, and they do different jobs:
 - **`downsample`** shrinks by an integer block size. This is the one that
   creates the pixel grid.
 - **`resize`** scales to a target size, either by longest side or exact
-  dimensions. Useful for getting a source down to a workable size *before*
-  downsampling.
+  dimensions. Currently, it can only downscale -- make a picture smaller, not larger.
 - **`upscale`** multiplies by an integer factor, and belongs at the end of a
-  pipeline so the output is viewable without the browser guessing how to
-  scale it.
+  pipeline so the output is viewable without being too small for most use-cases.
 
 All three are nearest-neighbor. Nothing here is allowed to invent a color
 that wasn't in the source.
@@ -91,44 +89,40 @@ that wasn't in the source.
 A palette can only work with what it's given. These operations exist because
 a source that hasn't been prepared gives the matcher less to work with.
 
-{% media(src="op_normalize.png", alt="Before and after normalize", width="w-64") %}
+{% media(src="gwape_normalize.png", alt="After normalize operation", width="w-64") %}
 **`normalize`** stretches each channel so a chosen percentile fills the full
 range. If your source is flat or hazy, the palette will faithfully reproduce
-that flatness — normalizing first gives it something to bite into.
+that flatness -- normalizing first gives it something to bite into.
 
 The `low` and `high` percentiles default to 0.01 and 0.99, which discards
 outliers rather than letting one blown highlight set the ceiling.
 {% end %}
 
-{% media(src="op_saturation.png", alt="Saturation increased", side="right", width="w-64") %}
+{% media(src="gwape_saturation.png", alt="Saturation increased", side="right", width="w-64") %}
 **`saturation`** scales chroma in OkLab, leaving lightness alone. That
 separation is the point: in RGB, pushing saturation drags hues toward the
 primaries and brightens as a side effect. Here the colors get more intense
 and stay where they were.
 {% end %}
 
-{% media(src="op_contrast.png", alt="Contrast increased", width="w-64") %}
+{% media(src="gwape_contrast.png", alt="Contrast increased", width="w-64") %}
 **`contrast`** pushes lightness away from mid-grey, also in OkLab, leaving
 chroma unchanged. Worth reaching for before palette mapping when the source
 is muddy.
 {% end %}
 
-{{ compare(before="op_blur_before.png", after="op_blur_after.png",
-           title="blur",
-           before_label="Quantized directly", after_label="Blurred, then quantized",
-           caption="Gaussian, computed in linear light. Softening first makes adjacent similar pixels collapse together instead of scattering.") }}
+{% media(src="gwape_blur.png", alt="blur operation", width="w-64", side="right") %}
+**`blur`** Gaussian, computed in linear light. Softening first makes adjacent similar pixels collapse together instead of scattering.
 
 `blur` is the least obvious operation here, because on its own it just makes
 the image worse. Its value is entirely in what happens next: a slightly
 softened source quantizes into larger, cleaner regions instead of noisy
 speckle.
+{% end %}
 
-<!-- TODO: verify this comparison actually shows what I'm claiming. If the
-     difference is small, cut the compare and fold blur into a note. -->
-
-{% media(src="op_posterize.png", alt="Posterized to five levels", side="right", width="w-64") %}
+{% media(src="gwape_posterize.png", alt="Posterized to four levels", width="w-64") %}
 **`posterize`** reduces each channel to N evenly-spaced levels. It's a
-palette reduction that doesn't need a palette — `levels: 4` gives you 64
+palette reduction that doesn't need a palette -- `levels: 4` gives you 64
 colors arranged on a regular grid.
 
 It's cruder than palette mapping, and sometimes that's what you want.
@@ -139,31 +133,27 @@ It's cruder than palette mapping, and sometimes that's what you want.
 
 This is where the color science from the top of the page actually lands.
 
-{{ compare(before="op_palette_before.png", after="op_palette_after.png",
+{{ compare(before="gwape_downsample.png", after="gwape_palette_map.png",
            title="palette_map",
            before_label="Full color", after_label="Game Boy, 4 colors",
            caption="Every pixel snaps to its nearest palette entry. 'Nearest' is measured in OkLab by default.") }}
 
 `palette_map` takes a list of hex colors and maps each pixel to the closest
-one. The `mapping_space` parameter chooses how "closest" is measured —
+one. The `mapping_space` parameter chooses how "closest" is measured --
 `oklab` by default, `rgb` if you want the naive version (which, as covered
 above, is occasionally the better choice at very small palette sizes).
 
-{{ compare(before="op_adaptive_before.png", after="op_adaptive_after.png",
+{{ compare(before="gwape_downsample.png", after="gwape_adaptive_palette_map.png",
            title="adaptive_palette_map",
-           before_label="Source", after_label="16 colors, generated",
+           before_label="Source", after_label="32 colors, generated",
            caption="Octree quantization builds a palette from the image itself.") }}
 
 `adaptive_palette_map` does the same mapping, but derives the palette from
 the image rather than taking one. Under the hood that's an octree
-quantizer — the color space gets subdivided into a tree, sparse branches get
+quantizer -- the color space gets subdivided into a tree, sparse branches get
 merged until only N leaves remain, and each leaf becomes a palette entry.
 
-<!-- TODO: worth one sentence on why octree rather than median cut? Honest
-     answer is that median cut currently produces better palettes and this
-     is the next thing to improve. Decide whether to say so. -->
-
-{{ compare(before="op_dither_before.png", after="op_dither_after.png",
+{{ compare(before="gwape_palette_map.png", after="gwape_dither_atkinson.png",
            title="Dithering",
            before_label="Flat quantization", after_label="Atkinson",
            caption="Error diffusion spreads each pixel's rounding error into its neighbors, so the eye blends it back into tones the palette doesn't contain.") }}
@@ -190,7 +180,7 @@ Bayer is ordered rather than error-diffusing, so it produces a regular
 crosshatch instead of organic noise. Better for anything that needs to tile.
 
 The error-diffusion algorithms take two extra parameters worth knowing
-about. `bleed` controls how much of the error propagates — lowering it helps
+about. `bleed` controls how much of the error propagates -- lowering it helps
 when the palette simply can't represent the source's brightness range and
 full diffusion would smear that failure across the image. `clamp` constrains
 the error buffer to the palette's range, which helps for the same reason.
@@ -199,10 +189,7 @@ the error buffer to the palette's range, which helps for the same reason.
 {% end %}
 
 {% note(title="Does order matter?", kind="warn") %}
-<!-- TODO: reconcile this with the "no order of operations" line further
-     down the page. Operations are composable in any order, but some
-     orderings are obviously better than others — normalize before mapping,
-     upscale last. Say which it is. -->
+Some orderings obviously make more sense than others. Use your best judgment -- Pixel Plumb does not hold your hand.
 {% end %}
 
 
