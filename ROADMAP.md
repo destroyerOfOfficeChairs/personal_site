@@ -5,32 +5,8 @@ build instructions live in `README.md`.
 
 ## Next session — start here
 
-1. Write the Pixel Plumb project page from the Operations section onward.
-   The colour-maths section is done; everything below it is still draft.
-2. Verify the invented claims in that draft (see Content, below).
-3. Delete `instructions.txt` — superseded by `dev.sh` and the README.
-
----
-
-## Blocking launch
-
 ### Content
 
-- **Pixel Plumb project page, Operations onward.** Consider mixing
-  `{{ compare() }}` and `{% media() %}` rather than four identical
-  two-panel boxes in a row — `compare` where the difference is subtle,
-  `media` where one result plus an explanation is enough.
-- **Verify the drafted claims.** Several lines in the current draft were
-  written from description, not from the code:
-  - the `edit_op` "source of most of the bugs in the first month" line
-  - "Atkinson is the default, chosen empirically"
-  - the dithering list (Floyd–Steinberg, Atkinson, Sierra, Bayer)
-  - the YAML pipeline example — replace with real copy-button output
-  - "less than 24 colours" in the OkLab-falls-short note. If measured,
-    say so; if it's an impression, soften it.
-  - the Status section still says v0.1.0
-- **Projects section blurb.** Currently a placeholder about having one
-  project.
 - **Fix Exhibit B in the Helix article.** The `auto-format = true` example
   is a no-op; it's already the default for Rust. Use the real
   `config.toml` / `languages.toml`, and make the sharper point: the config
@@ -39,36 +15,9 @@ build instructions live in `README.md`.
   defaults. Consider pasting real `hx --health rust` output as evidence.
 - **Add cascading error messages to the Typst article.** One real LaTeX
   mistake producing a wall of unrelated errors.
-- **`description` front matter on every page.** Only `about.md` has one.
-  `meta_macro.html` reads it first for the meta description and
-  `og:description`; without it, previews fall back to the first 150
-  characters of the article.
+---
 
-### Contact
-
-- Decide between a footer link, a contact page, or both.
-- **Set up domain forwarding** rather than exposing the Gmail address:
-  `hello@wjcreations.com` → Gmail via ImprovMX (free tier, MX records in
-  Route 53) or Cloudflare Email Routing. Killable if it gets scraped, and
-  it looks better on a portfolio site.
-- Note that the Gmail address is already public in git commit metadata,
-  so obfuscation on the page would be theatre. A separate address is the
-  actual fix.
-- Use a real `mailto:` link so it works on mobile.
-
-### Assets
-
-- **Shrink the large source images before launch.** `pp_source.png` is
-  1.2 MB and `ship_in_the_night_*.webp` is 507 KB — together they dwarf
-  the entire rest of the site, which is under 50 KB. Both display at a
-  few hundred pixels.
-
-### Templates
-
-- `blog.html` and `section.html` need `{% block title %}` overrides. Their
-  browser tabs currently show only the site title.
-
-### Deploy
+## Deploy
 
 - Set `base_url` in `zola.toml` to `https://wjcreations.com`. Every
   permalink and Open Graph tag depends on it.
@@ -89,22 +38,33 @@ build instructions live in `README.md`.
 - The site and the subdomain deploy independently. `pixelplumb.` can go
   live first.
 
-### Before shipping
-
-- Click through every page of a `zola build`, including the taxonomy
-  pages. `taxonomy_list.html` and `taxonomy_single.html` haven't been
-  touched since the restructure.
-- Confirm `gen-share-cards.sh` has the `magick`/`convert` detection block.
-  This machine has ImageMagick 6, where the binary is `convert`.
-- Check whether the q16 build is emitting 16-bit PNGs. If `file` says
-  16-bit, add `-depth 8` to the share-card command.
-- Update `README.md`: it predates the `media()` shortcode, the revised
-  `compare()` parameters, and the lightbox.
-
 ---
 
 ## Backlog
 
+### Contact
+
+- Decide between a footer link, a contact page, or both.
+- **Set up domain forwarding** rather than exposing the Gmail address:
+  `hello@wjcreations.com` → Gmail via ImprovMX (free tier, MX records in
+  Route 53) or Cloudflare Email Routing. Killable if it gets scraped, and
+  it looks better on a portfolio site.
+- Note that the Gmail address is already public in git commit metadata,
+  so obfuscation on the page would be theatre. A separate address is the
+  actual fix.
+- Use a real `mailto:` link so it works on mobile.
+
+### Templates
+
+- `blog.html` and `section.html` need `{% block title %}` overrides. Their
+  browser tabs currently show only the site title.
+
+### Other stuff
+
+- **`description` front matter on every page.** Only `about.md` has one.
+  `meta_macro.html` reads it first for the meta description and
+  `og:description`; without it, previews fall back to the first 150
+  characters of the article.
 - **Learn CSS and layout properly.** Vibe-coding the styling stopped
   paying off. Most of the recent pain would have been ten seconds in the
   DevTools Elements panel — inspect the element, read the computed width,
