@@ -5,8 +5,10 @@ weight = 1
 tagline = "A pixel-art image pipeline in Rust and WebAssembly."
 url = "https://pixelplumb.wjcreations.com"
 repo = "https://github.com/destroyerOfOfficeChairs/pixel-plumb"
-before = "pp_source.png"
-after = "pp_output.png"
+# before = "pp_source.png"
+# after = "pp_output.png"
+before = "girl_with_a_pearl_earring.jpg"
+after = "gwape_oklab.png"
 featured = true
 +++
 
@@ -14,7 +16,7 @@ Pixel Plumb turns photographs into pixel art. You upload an image, stack up a fe
 
 ## The color math is done correctly
 
-Almost every pixelation tool maps a limited palette in RGB, which produces results that are visibly wrong.
+Almost every pixelation tool maps a limited palette in the RGB color space, which produces results that are visibly wrong.
 
 {{ pixel_art(src="girl_with_a_pearl_earring.jpg",
              alt="girl with a pearl earring",
@@ -42,77 +44,221 @@ When the palette size is small (in my testing: less than 24 colors), RGB might a
 
 ## Operations
 
-A pipeline is a list of operations applied in order. Each one is small and composable; the interesting results come from stacking them.
+A pipeline is a list of operations applied in order. Each one is small and
+self-contained, and the interesting results come from stacking them.
+
+There are three rough groups: the ones that change the pixel grid, the ones
+that prepare the image's tone and color, and the ones that map it to a
+palette. Most pipelines use at least one from each.
+
+<!-- TODO: consider a single image here showing the full pipeline result,
+     or a screenshot of the op sidebar, to orient before the detail. -->
+
+
+### The pixel grid
+
+{{ compare(before="op_downsample_before.png", after="op_downsample_after.png",
+           title="downsample",
+           before_label="Source", after_label="pixel_size: 8",
+           caption="Nearest-neighbor. The image is cropped first so its dimensions divide evenly — fractional pixels are the enemy.") }}
+
+`downsample` is the operation that makes pixel art pixel art. It collapses
+each `pixel_size` block down to a single sample, and it crops before it
+samples so nothing lands on a fractional boundary.
+
+<!-- TODO: is the crop worth explaining in more detail? It's a real design
+     decision and most tools don't bother. -->
+
+{% note(title="downsample, resize, upscale") %}
+Three operations touch dimensions, and they do different jobs:
+
+- **`downsample`** shrinks by an integer block size. This is the one that
+  creates the pixel grid.
+- **`resize`** scales to a target size, either by longest side or exact
+  dimensions. Useful for getting a source down to a workable size *before*
+  downsampling.
+- **`upscale`** multiplies by an integer factor, and belongs at the end of a
+  pipeline so the output is viewable without the browser guessing how to
+  scale it.
+
+All three are nearest-neighbor. Nothing here is allowed to invent a color
+that wasn't in the source.
+{% end %}
+
+
+### Preparing the image
+
+A palette can only work with what it's given. These operations exist because
+a source that hasn't been prepared gives the matcher less to work with.
+
+{% media(src="op_normalize.png", alt="Before and after normalize", width="w-64") %}
+**`normalize`** stretches each channel so a chosen percentile fills the full
+range. If your source is flat or hazy, the palette will faithfully reproduce
+that flatness — normalizing first gives it something to bite into.
+
+The `low` and `high` percentiles default to 0.01 and 0.99, which discards
+outliers rather than letting one blown highlight set the ceiling.
+{% end %}
+
+{% media(src="op_saturation.png", alt="Saturation increased", side="right", width="w-64") %}
+**`saturation`** scales chroma in OkLab, leaving lightness alone. That
+separation is the point: in RGB, pushing saturation drags hues toward the
+primaries and brightens as a side effect. Here the colors get more intense
+and stay where they were.
+{% end %}
+
+{% media(src="op_contrast.png", alt="Contrast increased", width="w-64") %}
+**`contrast`** pushes lightness away from mid-grey, also in OkLab, leaving
+chroma unchanged. Worth reaching for before palette mapping when the source
+is muddy.
+{% end %}
+
+{{ compare(before="op_blur_before.png", after="op_blur_after.png",
+           title="blur",
+           before_label="Quantized directly", after_label="Blurred, then quantized",
+           caption="Gaussian, computed in linear light. Softening first makes adjacent similar pixels collapse together instead of scattering.") }}
+
+`blur` is the least obvious operation here, because on its own it just makes
+the image worse. Its value is entirely in what happens next: a slightly
+softened source quantizes into larger, cleaner regions instead of noisy
+speckle.
+
+<!-- TODO: verify this comparison actually shows what I'm claiming. If the
+     difference is small, cut the compare and fold blur into a note. -->
+
+{% media(src="op_posterize.png", alt="Posterized to five levels", side="right", width="w-64") %}
+**`posterize`** reduces each channel to N evenly-spaced levels. It's a
+palette reduction that doesn't need a palette — `levels: 4` gives you 64
+colors arranged on a regular grid.
+
+It's cruder than palette mapping, and sometimes that's what you want.
+{% end %}
+
+
+### Mapping to a palette
+
+This is where the color science from the top of the page actually lands.
 
 {{ compare(before="op_palette_before.png", after="op_palette_after.png",
-           title="Adaptive palette",
-           before_label="Full color", after_label="16 colors",
-           caption="Builds a palette from the image itself rather than snapping to a fixed one.") }}
+           title="palette_map",
+           before_label="Full color", after_label="Game Boy, 4 colors",
+           caption="Every pixel snaps to its nearest palette entry. 'Nearest' is measured in OkLab by default.") }}
+
+`palette_map` takes a list of hex colors and maps each pixel to the closest
+one. The `mapping_space` parameter chooses how "closest" is measured —
+`oklab` by default, `rgb` if you want the naive version (which, as covered
+above, is occasionally the better choice at very small palette sizes).
+
+{{ compare(before="op_adaptive_before.png", after="op_adaptive_after.png",
+           title="adaptive_palette_map",
+           before_label="Source", after_label="16 colors, generated",
+           caption="Octree quantization builds a palette from the image itself.") }}
+
+`adaptive_palette_map` does the same mapping, but derives the palette from
+the image rather than taking one. Under the hood that's an octree
+quantizer — the color space gets subdivided into a tree, sparse branches get
+merged until only N leaves remain, and each leaf becomes a palette entry.
+
+<!-- TODO: worth one sentence on why octree rather than median cut? Honest
+     answer is that median cut currently produces better palettes and this
+     is the next thing to improve. Decide whether to say so. -->
 
 {{ compare(before="op_dither_before.png", after="op_dither_after.png",
-           title="Error diffusion",
-           before_label="Flat quantisation", after_label="Atkinson dithering",
-           caption="Atkinson diffuses only 6/8 of the error, which lightens the image. That's why Mac-era art looks the way it does.") }}
+           title="Dithering",
+           before_label="Flat quantization", after_label="Atkinson",
+           caption="Error diffusion spreads each pixel's rounding error into its neighbors, so the eye blends it back into tones the palette doesn't contain.") }}
 
-{{ compare(before="op_saturation_before.png", after="op_saturation_after.png",
-           title="Saturation",
-           before_label="Original", after_label="Saturation +40",
-           caption="Applied in OkLab, so increasing saturation doesn't drag hues toward the primaries.") }}
-
-{{ compare(before="op_contrast_before.png", after="op_contrast_after.png",
-           title="Contrast",
-           before_label="Original", after_label="Contrast +30",
-           caption="Often worth applying before palette matching — a flat source gives the matcher less to work with.") }}
+Both mapping operations take an optional `dither` block. Without it, every
+pixel independently snaps to its nearest entry and smooth gradients turn
+into hard bands. With it, the error from each snap is pushed into
+neighboring pixels, which produces texture where there would otherwise be
+banding.
 
 {% note(title="Dithering algorithms", collapsible=true, open=false) %}
-Floyd–Steinberg, Atkinson, Sierra, and ordered Bayer are all implemented. Atkinson is the default, chosen empirically rather than on principle: it produces the cleanest results on photographic sources at small palette sizes, at the cost of lightening the image.
+The following dithering algorithms have been implemented:
 
-Bayer is the odd one out — it's ordered rather than error-diffusing, so it produces a regular crosshatch instead of organic noise. Better for anything that needs to tile.
+- Floyd–Steinberg
+- Atkinson
+- Jarvis, Judice and Ninke
+- Bayer 4x4
+- Bayer 8x8
+
+Atkinson produces the cleanest results on photographic images, but it comes
+at the cost of lightening the image a bit. It's the classic Mac dithering.
+
+Bayer is ordered rather than error-diffusing, so it produces a regular
+crosshatch instead of organic noise. Better for anything that needs to tile.
+
+The error-diffusion algorithms take two extra parameters worth knowing
+about. `bleed` controls how much of the error propagates — lowering it helps
+when the palette simply can't represent the source's brightness range and
+full diffusion would smear that failure across the image. `clamp` constrains
+the error buffer to the palette's range, which helps for the same reason.
+
+[Read more about dithering algorithms here](https://tannerhelland.com/2012/12/28/dithering-eleven-algorithms-source-code.html)
 {% end %}
+
+{% note(title="Does order matter?", kind="warn") %}
+<!-- TODO: reconcile this with the "no order of operations" line further
+     down the page. Operations are composable in any order, but some
+     orderings are obviously better than others — normalize before mapping,
+     upscale last. Say which it is. -->
+{% end %}
+
 
 ## Using it
 
-Drag an image in. Add operations from the sidebar. Reorder them by dragging. Hit run.
+Load an image in. Add operations from the sidebar. Reorder them by dragging. Hit run.
 
-{{ pixel_art(src="ui_pipeline.png", alt="The pipeline editor with several operations stacked",
-             caption="The pipeline is the interface. Everything else is detail.") }}
+**Stage previews:** Every operation renders its own output, so you can see what each step did rather than guessing from the final result. Useful when a pipeline isn't doing what you expected -- the culprit is usually two steps earlier than you think.
 
-A few things worth knowing:
+**No "Order of operations":** Operations are self-contained and can be composed in any order.
 
-**Stage previews.** Every operation renders its own output, so you can see what each step did rather than guessing from the final result. Useful when a pipeline isn't doing what you expected — the culprit is usually two steps earlier than you think.
-
-**Pipelines are data.** The current pipeline is shown as YAML with a copy-to-clipboard button. Paste it into a file and run it through the `plumb` CLI to batch-process a directory, or paste it back into the web UI later.
+**Pipelines are data:** Your pipeline is shown as YAML with a copy-to-clipboard button. Paste it into a file and run it through the CLI to batch-process a directory.
 
 ```yaml
-- resize:
-    width: 96
-- contrast:
-    amount: 30
-- adaptive_palette:
-    colors: 16
-- dither:
-    algorithm: atkinson
+operations:
+- type: normalize
+  low: 0.03
+  high: 0.99
+- type: saturation
+  factor: 1.45
+- type: downsample
+  pixel_size: 8
+- type: palette_map
+  colors:
+  - '#9bbc0f'
+  - '#8bac0f'
+  - '#306230'
+  - '#0f380f'
+  dither:
+    algorithm: bayer8
+    strength: 32.0
+  preserve_alpha: true
+  mapping_space: oklab
+- type: upscale
+  factor: 8
 ```
-
-**Indexed PNG output.** A 96x64 image with a 16-color palette should be about a kilobyte. Storing it as 32-bit RGBA makes it twenty times that for no benefit, so the encoder builds a real palette and writes an indexed PNG.
 
 ## How it's built
 
 {% note(title="Implementation notes", collapsible=true, open=false) %}
-The core is a plain Rust library with no WASM dependency. The web UI is [Leptos](https://leptos.dev/) compiled to WebAssembly, and there's a CLI that uses the same core. Nothing in the color code knows or cares which frontend called it.
 
-**Pipeline as data.** An operation is an enum variant with serde derives, not a trait object. That was a deliberate choice: trait objects would have been the obvious OO answer, but they can't be serialised, and being able to round-trip a pipeline through YAML turned out to be the feature that made the CLI possible at all.
+Pixel Plumb has 3 components:
++ The core library.
++ The CLI.
++ The web app, which you can find on this site.
 
-**The value bag.** The UI needs a different shape than the core does. The core wants a strongly-typed `Operation`; the editor wants something it can render generic config cards from without knowing what operations exist. So the UI holds `OpInstance { tag, values: BTreeMap<String, ParamValue> }` and converts at the boundary. Schema-driven cards fall out of that for free — adding an operation means adding a schema entry, not writing a new component.
+The core is a plain Rust library with no WASM dependency. The web UI is [Leptos](https://leptos.dev/) compiled to WebAssembly, and the CLI uses the same core. Nothing in the core's code knows or cares which frontend called it.
 
-**One write path.** Every mutation goes through a single `edit_op` function. This sounds obvious and was not obvious at the time; the version where the drag handler, the config cards, and the delete button each mutated state directly was the source of most of the bugs in the first month.
+Further documentation can be found in [the repo](https://github.com/destroyerOfOfficeChairs/pixel-plumb)
 {% end %}
 
 ## Status
 
-Version 0.1.0. It works, it's fast, and I use it — every image on this site was made with it.
+**Version 0.1.1**
 
-Known rough edges: the palette editor is functional but plain, there's no undo, and large images can take a few seconds since everything runs on one thread. Threading is possible in WASM but needs `SharedArrayBuffer`, which needs response headers GitHub Pages can't set — so that's a hosting decision as much as a code one.
+It works, and I use it -- every image on this site was made with it. But it's not fast. I have several optimizations in mind, but I just wanted a live version up before tackling all that.
 
 [Try it](https://pixelplumb.wjcreations.com) ·
 [Source](https://github.com/destroyerOfOfficeChairs/pixel-plumb)

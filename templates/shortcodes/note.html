@@ -53,29 +53,25 @@
 
 {%- if collapsible and title -%}
 
-<details class="not-prose my-6 overflow-hidden rounded-lg border border-slate-800 border-l-4 {{ edge }} bg-slate-800/30" {% if open %}open{% endif %}>
-  <summary class="cursor-pointer select-none px-4 py-2 text-sm font-bold {{ head }} hover:bg-slate-800/50 transition-colors">
+<details class="my-6 overflow-hidden rounded-lg border border-slate-800 border-l-4 {{ edge }} bg-slate-800/30" {% if open %}open{% endif %}>
+  <summary class="not-prose cursor-pointer select-none px-4 py-2 text-sm font-bold {{ head }} hover:bg-slate-800/50 transition-colors">
     {{ title }}
   </summary>
   <div class="border-t border-slate-800 px-4 py-3">
-    <div class="prose prose-invert prose-sm max-w-none">
-      {{ body | markdown | safe }}
-    </div>
+    {{ body | markdown | safe }}
   </div>
 </details>
 
 {%- else -%}
 
-<div class="not-prose my-6 overflow-hidden rounded-lg border border-slate-800 border-l-4 {{ edge }} bg-slate-800/30">
+<div class="my-6 overflow-hidden rounded-lg border border-slate-800 border-l-4 {{ edge }} bg-slate-800/30">
   {% if title %}
-  <div class="border-b border-slate-800 px-4 py-2 text-sm font-bold {{ head }}">
+  <div class="not-prose border-b border-slate-800 px-4 py-2 text-sm font-bold {{ head }}">
     {{ title }}
   </div>
   {% endif %}
   <div class="px-4 py-3">
-    <div class="prose prose-invert prose-sm max-w-none">
-      {{ body | markdown | safe }}
-    </div>
+    {{ body | markdown | safe }}
   </div>
 </div>
 
