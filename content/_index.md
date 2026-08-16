@@ -1,5 +1,6 @@
 +++
 title = "Home"
+description = "William Bryan — Rust developer, AV control systems programmer, and maker of Pixel Plumb."
 template = "index.html"
 [extra]
 roles = ["Rust developer", "AV control systems programmer", "Master's degree student"]

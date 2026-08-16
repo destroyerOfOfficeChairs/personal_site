@@ -1,6 +1,7 @@
 +++
 title = "Pixel Plumb"
 weight = 1
+description = "A pixel-art image pipeline in Rust and WebAssembly. Perceptual palette matching in OkLab, error diffusion in linear light, runs entirely in the browser."
 [extra]
 tagline = "A pixel-art image pipeline in Rust and WebAssembly."
 url = "https://pixelplumb.wjcreations.com"

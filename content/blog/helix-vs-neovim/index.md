@@ -1,6 +1,7 @@
 +++
 title = "Helix Is Better Than Neovim"
 date = 2026-05-09
+description = "Neovim asks you to build an editor before you can use one. Helix ships with the parts already attached."
 
 # This is how you set the slug:
 # slug = "neovim-sucks"
@@ -11,7 +12,7 @@ tags = ["helix", "rust", "linux", "coding", "writing"]
 
 [extra]
 # hero: on-site image. Native pixel-art resolution (96x64), scaled up
-# by CSS with image-rendering: pixelated. Keep it small — do NOT
+# by CSS with image-rendering: pixelated. Keep it small -- do NOT
 # pre-upscale, or the browser blurs an already-blurry file.
 hero = "helix_logo_pixelplumb.png"
 
@@ -82,26 +83,89 @@ So does the Neovim user, eventually, after assembling the machine that installs 
 
 # Exhibit B: The Config
 
-Here is a Helix config that turns on format-on-save for Rust and picks a theme.
+Here is my entire `config.toml`. This is not an excerpt.
 
 ```toml
-# config.toml
-theme = "base16_default_dark"
-
 [editor]
-line-number = "relative"
+bufferline = "multiple"
+
+[keys.insert]
+j = { j = "normal_mode" }
+
+[editor.soft-wrap]
+wrap-indicator = ""
+
+[editor.statusline]
+left = ["mode", "spinner"]
+center = ["file-name"]
+right = ["diagnostics", "position", "position-percentage", "file-type"]
 ```
+
+Four settings and a keybind. A buffer line, `jj` to escape insert mode, a status line arrangement I like, and one cosmetic tweak to soft wrap.
+
+Not one line of that is required. Delete the file and Helix still opens, still highlights, still completes, still shows me diagnostics. It just looks slightly less like I want it to.
+
+I also have a `languages.toml`:
 
 ```toml
-# languages.toml
+# A grammar checker for prose
+[language-server.harper-ls]
+command = "harper-ls"
+args = ["--stdio"]
+
+# Wrap plain text and Typst at 80 columns, with a ruler
 [[language]]
-name = "rust"
-auto-format = true
+name = "typst"
+scope = "source.typst"
+file-types = ["typ", "md"]
+text-width = 80
+rulers = [81]
+soft-wrap.enable = true
+soft-wrap.wrap-at-text-width = true
+language-servers = ["tinymist", "harper-ls"]
+
+# Tailwind class completion inside HTML
+[language-server.tailwindcss-ls]
+command = "tailwindcss-language-server"
+args = ["--stdio"]
+
+[[language]]
+name = "html"
+language-servers = ["tailwindcss-ls", "vscode-html-language-server"]
 ```
 
-Six meaningful lines. Two files. Done.
+Every one of those is something I *added*. It's just adding a grammar checker and some Tailwind support that Helix doesn't ship, as well as wrapping text in the way I prefer.
 
-The equivalent in Neovim is _several_ files of bullshit. I've already shown you one bootstrapper today. I will not be doing that again.
+Here's the part I want you to notice. There is no section in that file turning on Rust support. There is no section installing rust-analyzer, or wiring it to the language server, or registering a tree-sitter grammar. I never added any of that to my config because I never needed to -- Helix did it for me.
+
+You've seen my config. Those 2 files are _all of it_. Now look at this `--health` output:
+
+```
+mind@peace:~/repos/helix_config$ hx --health rust
+Configured language servers:
+  ✓ rust-analyzer: /home/mind/.cargo/bin/rust-analyzer
+Configured debug adapter:
+  ✘ 'lldb-dap' not found in $PATH
+Configured formatter: None
+Tree-sitter parser: ✓
+Highlight queries: ✓
+Textobject queries: ✓
+Indent queries: ✓
+Tags queries: ✓
+Rainbow queries: ✓
+```
+
+That's not from my config. Helix compiles a default `languages.toml` into
+the binary, covering every language it supports and the servers people
+actually use for them. The file in my config directory doesn't *enable*
+things -- it *overrides* things. Mine is entirely additions and preferences,
+which is why it's all optional.
+
+The debug adapter line is a ✘ because I've never installed one. That's Helix telling me the truth about my own machine, not a failure -- and notice it still knew what adapter to look for.
+
+## The bottom line on configs
+
+My config is a list of opinions. Yours is a list of prerequisites.
 
 # Exhibit C: Multiple Cursors
 

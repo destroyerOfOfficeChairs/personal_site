@@ -1,7 +1,7 @@
 # The URL the site will be built for
 base_url = "https://wjcreations.com"
 title = "WJ Creations"
-description = "Digital workspace, project showcase, and blog covering software engineering, Rust, and leathercraft."
+description = "William Bryan's site. Rust projects, opinionated writing about software, and the occasional leather trinket."
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false
