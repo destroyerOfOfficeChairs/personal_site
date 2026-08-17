@@ -1,6 +1,6 @@
 +++
 title = "Helix Is Better Than Neovim"
-date = 2026-05-09
+date = 2026-08-15
 description = "Neovim asks you to build an editor before you can use one. Helix ships with the parts already attached."
 
 # This is how you set the slug:
@@ -103,7 +103,7 @@ right = ["diagnostics", "position", "position-percentage", "file-type"]
 
 Four settings and a keybind. A buffer line, `jj` to escape insert mode, a status line arrangement I like, and one cosmetic tweak to soft wrap.
 
-Not one line of that is required. Delete the file and Helix still opens, still highlights, still completes, still shows me diagnostics. It just looks slightly less like I want it to.
+Not one line of that is required. If I delete my config, Helix is still amazing. It just looks slightly less like I want it to.
 
 I also have a `languages.toml`:
 
@@ -134,38 +134,15 @@ name = "html"
 language-servers = ["tailwindcss-ls", "vscode-html-language-server"]
 ```
 
-Every one of those is something I *added*. It's just adding a grammar checker and some Tailwind support that Helix doesn't ship, as well as wrapping text in the way I prefer.
+Every one of those is something I *added*: a grammar checker and some Tailwind support that Helix doesn't ship, as well as wrapping text in the way I prefer.
 
-Here's the part I want you to notice. There is no section in that file turning on Rust support. There is no section installing rust-analyzer, or wiring it to the language server, or registering a tree-sitter grammar. I never added any of that to my config because I never needed to -- Helix did it for me.
-
-You've seen my config. Those 2 files are _all of it_. Now look at this `--health` output:
-
-```
-mind@peace:~/repos/helix_config$ hx --health rust
-Configured language servers:
-  ✓ rust-analyzer: /home/mind/.cargo/bin/rust-analyzer
-Configured debug adapter:
-  ✘ 'lldb-dap' not found in $PATH
-Configured formatter: None
-Tree-sitter parser: ✓
-Highlight queries: ✓
-Textobject queries: ✓
-Indent queries: ✓
-Tags queries: ✓
-Rainbow queries: ✓
-```
-
-That's not from my config. Helix compiles a default `languages.toml` into
-the binary, covering every language it supports and the servers people
-actually use for them. The file in my config directory doesn't *enable*
-things -- it *overrides* things. Mine is entirely additions and preferences,
-which is why it's all optional.
-
-The debug adapter line is a ✘ because I've never installed one. That's Helix telling me the truth about my own machine, not a failure -- and notice it still knew what adapter to look for.
+Notice that there is no section in that file turning on Rust support. There is no section installing rust-analyzer, or wiring it to the language server, or registering a tree-sitter grammar. I never added any of that to my config because I never needed to -- Helix did it for me.
 
 ## The bottom line on configs
 
-My config is a list of opinions. Yours is a list of prerequisites.
+You've seen my config. It's just some opinions and preferences. Those 2 files are _all of it_. Now compare that to your Frankenstein's monster of a Neovim config.
+
+Do yourself a favor and download a real editor.
 
 # Exhibit C: Multiple Cursors
 

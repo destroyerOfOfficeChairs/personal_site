@@ -1,6 +1,6 @@
 +++
 title = "Typst Is Better Than LaTeX"
-date = 2026-05-10
+date = 2026-08-16
 description = "Nine lines of LaTeX to print one word, error messages that report a quality called badness, and a 4GB install. There is another option."
 
 [taxonomies]
