@@ -26,7 +26,7 @@ I somehow ended up in the low-voltage electrician world which, given my expertis
 
 # Italy
 
-I'm fucking going to Italy! I got accepted into a master's degree program at the University of Florence. I'm excited for the education, but my real motivation is to escape the United States. You know what the kids are saying nowadays: The _new_ American dream is to leave.
+I'm going to Italy! I got accepted into a master's degree program at the University of Florence. I'm excited for the education, but my real motivation is to escape the United States. You know what the kids are saying nowadays: The _new_ American dream is to leave.
 
 # This Site
 
