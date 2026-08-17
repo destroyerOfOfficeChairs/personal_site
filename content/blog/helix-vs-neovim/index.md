@@ -25,7 +25,7 @@ hero = "helix_logo_pixelplumb.png"
 # UNCOMMENT THE FOLLOWING LINE WHEN YOU MAKE A SHARE IMAGE
 #share = "/images/helix_share.png"
 
-subtitle = "I escaped configuration hell. You can too, if you stop enjoying it."
+subtitle = "I escaped configuration hell. You can too."
 +++
 
 You saw your favorite tech YouTuber using Neovim and decided to try it yourself. It's hard to get anything done because you spend so much time trying to understand why your copy-pasted config files are not working the way you want.
