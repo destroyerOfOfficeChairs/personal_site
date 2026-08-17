@@ -9,7 +9,7 @@ tags = ["typst", "rust", "typesetting", "writing"]
 
 [extra]
 hero = "typst_logo_pixelplumb.png"
-subtitle = "A eulogy nobody asked for, delivered at a funeral nobody scheduled."
+subtitle = "I'm never using LaTeX again, and neither should you."
 +++
 
 I can hear the contrarians now: "BuT LaTeX iS InDuStRy StAnDaRd!"
