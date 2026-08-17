@@ -7,4 +7,4 @@ sort_by = "date"
 paginate_by = 5
 +++
 
-I promise these articles are not AI slop.
+My opinions are correct.
