@@ -1,0 +1,47 @@
+{# ============================================================
+   img() — a single image with an optional caption.
+
+   Self-closing shortcode: {{ img(...) }}, not {% %}.
+
+   Image paths are page-relative, so colocated filenames work
+   directly: "bayer.png", not "/images/bayer.png".
+
+   Parameters
+     src        image path                        (required)
+     alt        alt text                          (recommended)
+     caption    line beneath the image            (optional)
+     width      Tailwind max-w-* class            (default max-w-md)
+                For pixel art, keep this an integer multiple of the
+                image's native size or the pixels come out uneven.
+     pixelated  bool, default true. Nearest-neighbor scaling, which
+                is right for pixel art and wrong for photographs and
+                anything else continuous-tone.
+
+   Usage
+     {{ img(src="bayer.png", alt="Bayer dithered output") }}
+
+     {{ img(src="atkinson.png", alt="Atkinson dithering",
+            caption="Atkinson diffuses only 6/8 of the error, which lightens the image.") }}
+
+     {{ img(src="pipeline.png", alt="Full pipeline", width="max-w-2xl") }}
+
+     {{ img(src="photo.webp", alt="The source painting",
+            pixelated=false, width="max-w-sm") }}
+   ============================================================ #}
+
+{%- set pixelated = pixelated | default(value=true) -%}
+{%- set width = width | default(value="max-w-md") -%}
+{%- set base = "mx-auto h-auto w-full rounded " ~ width -%}
+
+{%- if pixelated -%}
+  {%- set img_class = "pixelated " ~ base -%}
+{%- else -%}
+  {%- set img_class = base -%}
+{%- endif -%}
+
+<figure class="my-6">
+  <img src="{{ src }}" alt="{{ alt | default(value='') }}" class="{{ img_class }}">
+  {% if caption %}
+  <figcaption class="mt-2 text-center text-sm text-slate-500">{{ caption }}</figcaption>
+  {% endif %}
+</figure>

@@ -13,16 +13,23 @@ after = "gwape_oklab.png"
 featured = true
 +++
 
+{{ img(src="aliesha_pixelplumb_doodle.webp",
+       pixelated=false,
+       alt="my baby's artwork",
+       caption="My Daughter's artwork. She's so supportive. I'm lucky.",
+       width="max-w-lg") }}
+
 Pixel Plumb turns photographs into pixel art. You upload an image, stack up a few operations, and hit run. It works entirely in your browser -- meaning I collect no data.
 
 ## The color math is done correctly
 
 Almost every pixelation tool maps a limited palette in the RGB color space, which produces results that are visibly wrong.
 
-{{ pixel_art(src="gwape_source.jpg",
-             alt="girl with a pearl earring",
-             caption="The source painting — Vermeer, Girl with a Pearl Earring, Mauritshuis.",
-             width="max-w-sm") }}
+{{ img(src="gwape_source.jpg",
+       pixelated=false,
+       alt="girl with a pearl earring",
+       caption="The source painting — Vermeer, Girl with a Pearl Earring, Mauritshuis.",
+       width="max-w-sm") }}
 
 {{ compare(before="gwape_rgb.png",
            after="gwape_oklab.png",
